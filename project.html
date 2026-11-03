@@ -1,0 +1,1378 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>District Secretariat Kandy - NGO Project Management & Approval System</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons CDN -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- QR Code Library CDN -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        body { font-family: 'Inter', sans-serif; }
+        
+        @media print {
+            body * { visibility: hidden; }
+            #printable-area, #printable-area * { visibility: visible; }
+            #printable-area { position: absolute; left: 0; top: 0; width: 100%; }
+            .no-print { display: none !important; }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col">
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" class="fixed bottom-5 right-5 z-50 flex flex-col gap-2"></div>
+
+    <!-- MAIN HEADER -->
+    <header class="bg-amber-950 text-white shadow-lg no-print">
+        <div class="max-w-7xl mx-auto px-4 py-3 flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 bg-amber-900 rounded-full flex items-center justify-center border border-amber-700 font-bold text-lg">
+                    🏛️
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-tight">District Secretariat - Kandy</h1>
+                    <p class="text-xs text-amber-200">Official NGO Project Approval & Tracking Portal</p>
+                </div>
+            </div>
+
+            <!-- Logged-in Header Control -->
+            <div id="header-user-info" class="hidden flex items-center gap-4">
+                <div class="text-right text-xs">
+                    <p id="user-display-name" class="font-semibold text-white"></p>
+                    <p id="user-display-role" class="text-amber-200"></p>
+                </div>
+                <button onclick="logout()" class="bg-amber-900 hover:bg-amber-800 text-amber-100 text-xs px-3 py-1.5 rounded flex items-center gap-1 transition">
+                    <i class="fa-solid fa-right-from-bracket"></i> Logout
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN CONTAINER -->
+    <main class="flex-1 max-w-7xl w-full mx-auto px-4 py-6">
+
+        <!-- 1. AUTH & REGISTRATION VIEW -->
+        <section id="auth-view" class="max-w-md mx-auto my-6 bg-white p-8 rounded-xl shadow-md border border-slate-200">
+            
+            <div class="flex border-b border-slate-200 mb-6 text-center">
+                <button id="tab-btn-login" onclick="switchAuthTab('login')" class="flex-1 py-2 font-bold text-amber-950 border-b-2 border-amber-950 text-sm">Sign In</button>
+                <button id="tab-btn-register" onclick="switchAuthTab('register')" class="flex-1 py-2 font-semibold text-slate-400 hover:text-slate-600 text-sm">NGO Registration</button>
+            </div>
+
+            <!-- LOGIN FORM -->
+            <div id="form-login-container">
+                <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-600 uppercase mb-1">Email Address</label>
+                        <input type="email" id="login-email" required class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none" placeholder="your-email@domain.com">
+                    </div>
+                    <div>
+                        <div class="flex justify-between items-center mb-1">
+                            <label class="block text-xs font-semibold text-slate-600 uppercase">Password</label>
+                            <button type="button" onclick="showForgotPasswordModal()" class="text-xs text-amber-800 hover:underline">Forgot Password?</button>
+                        </div>
+                        <input type="password" id="login-password" required class="w-full px-3 py-2 border rounded-lg text-sm focus:ring-2 focus:ring-amber-500 outline-none" placeholder="••••••••">
+                    </div>
+                    <button type="submit" class="w-full bg-amber-950 hover:bg-amber-900 text-white py-2.5 rounded-lg font-semibold text-sm transition shadow">
+                        Sign In
+                    </button>
+                </form>
+            </div>
+
+            <!-- NGO REGISTRATION FORM -->
+            <div id="form-register-container" class="hidden">
+                <form onsubmit="handleNgoRegister(event)" class="space-y-3 text-xs">
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Official NGO Name</label>
+                        <input type="text" id="reg-ngo-name" required placeholder="e.g. Hope Lanka Foundation" class="w-full px-3 py-2 border rounded-md outline-none focus:ring-1 focus:ring-amber-500">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">NGO Registration Number</label>
+                        <input type="text" id="reg-ngo-number" required placeholder="e.g. KDS/10/1/NGO/189" class="w-full px-3 py-2 border rounded-md outline-none focus:ring-1 focus:ring-amber-500">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Official Email Address (Login ID)</label>
+                        <input type="email" id="reg-email" required placeholder="info@yourngo.org" class="w-full px-3 py-2 border rounded-md outline-none focus:ring-1 focus:ring-amber-500">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Create Password</label>
+                        <input type="password" id="reg-pass" required placeholder="••••••••" class="w-full px-3 py-2 border rounded-md outline-none focus:ring-1 focus:ring-amber-500">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Contact Person & Phone Number</label>
+                        <input type="text" id="reg-contact" required placeholder="Mr. Perera (077 123 4567)" class="w-full px-3 py-2 border rounded-md outline-none focus:ring-1 focus:ring-amber-500">
+                    </div>
+
+                    <button type="submit" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white py-2.5 rounded-lg font-semibold text-xs transition shadow mt-2">
+                        Create Account & Register
+                    </button>
+                </form>
+            </div>
+
+        </section>
+
+        <!-- 2. DASHBOARD VIEW -->
+        <section id="dashboard-view" class="hidden space-y-6">
+            
+            <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 flex flex-wrap justify-between items-center gap-4">
+                <div>
+                    <span id="role-badge" class="inline-block px-2.5 py-0.5 text-xs font-semibold rounded-full bg-amber-100 text-amber-900 mb-2">Role</span>
+                    <h2 class="text-xl font-bold text-slate-800" id="dashboard-heading">Dashboard</h2>
+                    <p class="text-xs text-slate-500 mt-0.5" id="dashboard-subheading">District Secretariat, Kandy - NGO Project Management</p>
+                </div>
+                
+                <div class="flex flex-wrap items-center gap-2">
+                    <button id="btn-ds-officers" onclick="showDsOfficerModal()" class="hidden bg-slate-800 hover:bg-slate-900 text-white text-xs px-3.5 py-2 rounded-lg font-semibold flex items-center gap-2 shadow">
+                        <i class="fa-solid fa-user-plus"></i> Officer Management (DS)
+                    </button>
+                    <button id="btn-admin-config" onclick="showAdminConfigModal()" class="hidden bg-slate-700 hover:bg-slate-800 text-white text-xs px-3.5 py-2 rounded-lg font-semibold flex items-center gap-2 shadow">
+                        <i class="fa-solid fa-sliders"></i> District & Divisions Settings (Developer)
+                    </button>
+                    <button id="btn-ngo-profile" onclick="showNgoProfileModal()" class="hidden bg-amber-950 hover:bg-amber-900 text-white text-xs px-3.5 py-2 rounded-lg font-semibold flex items-center gap-2 shadow">
+                        <i class="fa-solid fa-id-card"></i> NGO Profile
+                    </button>
+                    <button id="btn-add-project" onclick="showProjectModal()" class="hidden bg-emerald-700 hover:bg-emerald-800 text-white text-xs px-4 py-2 rounded-lg font-semibold flex items-center gap-2 shadow">
+                        <i class="fa-solid fa-plus"></i> Submit New Proposal
+                    </button>
+                    <button onclick="printExecutiveReport()" class="bg-slate-700 hover:bg-slate-800 text-white text-xs px-3.5 py-2 rounded-lg font-semibold flex items-center gap-2 shadow">
+                        <i class="fa-solid fa-file-pdf"></i> Executive Summary Report
+                    </button>
+                    <button onclick="resetSystemData()" class="bg-slate-100 hover:bg-red-50 text-slate-600 hover:text-red-700 border border-slate-300 text-xs px-3 py-2 rounded-lg transition" title="Reset System">
+                        <i class="fa-solid fa-rotate-left"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Stats Bar -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-slate-500 font-medium">Total Proposals</p>
+                        <h3 class="text-2xl font-bold text-slate-800" id="stat-total">0</h3>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+                        <i class="fa-solid fa-folder"></i>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-slate-500 font-medium">Pending Review</p>
+                        <h3 class="text-2xl font-bold text-amber-600" id="stat-pending">0</h3>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
+                        <i class="fa-solid fa-hourglass-half"></i>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-slate-500 font-medium">DS Approved</p>
+                        <h3 class="text-2xl font-bold text-emerald-600" id="stat-approved">0</h3>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+                        <i class="fa-solid fa-circle-check"></i>
+                    </div>
+                </div>
+                <div class="bg-white p-4 rounded-xl border border-slate-200 shadow-sm flex items-center justify-between">
+                    <div>
+                        <p class="text-xs text-slate-500 font-medium">Total Approved Budget</p>
+                        <h3 class="text-lg font-bold text-slate-800" id="stat-budget">LKR 0</h3>
+                    </div>
+                    <div class="w-10 h-10 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
+                        <i class="fa-solid fa-coins"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Table of Projects -->
+            <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
+                <div class="p-4 border-b border-slate-100 flex justify-between items-center">
+                    <h3 class="font-bold text-slate-800 text-sm" id="table-heading">Project Proposals Matrix</h3>
+                    <input type="text" id="table-search" onkeyup="filterProjects()" placeholder="Type to search..." class="text-xs border px-3 py-1.5 rounded-md outline-none focus:ring-1 focus:ring-amber-500 w-64">
+                </div>
+                
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-slate-50 border-b border-slate-200 text-xs text-slate-500 font-semibold uppercase">
+                                <th class="p-3">Ref ID</th>
+                                <th class="p-3">Project Title & NGO</th>
+                                <th class="p-3">District & DS Division</th>
+                                <th class="p-3">Budget (LKR)</th>
+                                <th class="p-3">Current Approval Stage</th>
+                                <th class="p-3 text-right">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="projects-table-body" class="divide-y divide-slate-100 text-xs">
+                            <!-- Dynamic Content -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- DS OFFICER INVITATION & MANAGEMENT MODAL -->
+    <div id="ds-officer-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h3 class="font-bold text-lg text-slate-800">District Secretary - Officer Management</h3>
+                <button onclick="closeDsOfficerModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            
+            <div class="space-y-4 text-xs">
+                <div class="bg-amber-50 p-3 rounded border border-amber-200">
+                    <h4 class="font-bold text-amber-900 mb-1">Add New Officer / Coordinator</h4>
+                    <p class="text-slate-600 text-[11px] mb-3">An SMS OTP will be sent to the officer's mobile number, and account activation instructions will be sent to their email.</p>
+                    
+                    <form onsubmit="handleDsAddOfficer(event)" class="space-y-2">
+                        <div>
+                            <label class="block font-semibold text-slate-700 mb-1">Full Name & Designation</label>
+                            <input type="text" id="ds-new-name" required placeholder="e.g. Mr. H. M. Perera" class="w-full border px-3 py-1.5 rounded outline-none focus:ring-1 focus:ring-amber-500 bg-white">
+                        </div>
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block font-semibold text-slate-700 mb-1">Official Email</label>
+                                <input type="email" id="ds-new-email" required placeholder="officer@kandy.gov.lk" class="w-full border px-3 py-1.5 rounded outline-none focus:ring-1 focus:ring-amber-500 bg-white">
+                            </div>
+                            <div>
+                                <label class="block font-semibold text-slate-700 mb-1">Mobile Phone (For SMS OTP)</label>
+                                <input type="text" id="ds-new-phone" required placeholder="0712345678" class="w-full border px-3 py-1.5 rounded outline-none focus:ring-1 focus:ring-amber-500 bg-white">
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block font-semibold text-slate-700 mb-1">System Role</label>
+                            <select id="ds-new-role" class="w-full border px-3 py-1.5 rounded outline-none focus:ring-1 focus:ring-amber-500 bg-white">
+                                <option value="ngo_coordinator">NGO Coordinator</option>
+                                <option value="ads">Assistant District Secretary (ADS)</option>
+                                <option value="auth_officer">Authorized Officer / Additional DS</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="w-full bg-amber-950 hover:bg-amber-900 text-white py-2 rounded font-semibold mt-1">Send Invitation & SMS OTP</button>
+                    </form>
+                </div>
+
+                <div>
+                    <h4 class="font-bold text-slate-700 mb-2">Active District Officers:</h4>
+                    <div id="ds-officers-list" class="max-h-40 overflow-y-auto border rounded bg-slate-50 p-2 space-y-1">
+                        <!-- Dynamic list -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end pt-4 border-t mt-4">
+                <button onclick="closeDsOfficerModal()" class="px-4 py-2 bg-slate-200 text-slate-700 rounded text-xs font-semibold">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- OFFICER SELF-ACTIVATION MODAL (AFTER SMS OTP) -->
+    <div id="activation-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-sm w-full p-6">
+            <h3 class="font-bold text-lg text-slate-800 mb-1">Officer Account Activation</h3>
+            <p class="text-xs text-slate-500 mb-4">Enter the SMS OTP received on your phone to set a new password.</p>
+            <form onsubmit="handleOfficerActivation(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Your Official Email</label>
+                    <input type="email" id="act-email" required class="w-full border px-3 py-2 rounded bg-slate-50 text-slate-500" readonly>
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">SMS OTP Code</label>
+                    <input type="text" id="act-otp" required placeholder="6-digit OTP" class="w-full border px-3 py-2 rounded outline-none focus:ring-1 focus:ring-amber-500">
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Set New Password</label>
+                    <input type="password" id="act-password" required placeholder="••••••••" class="w-full border px-3 py-2 rounded outline-none focus:ring-1 focus:ring-amber-500">
+                </div>
+                <button type="submit" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white py-2.5 rounded font-semibold shadow mt-2">Activate Account & Sign In</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- FORGOT PASSWORD MODAL (EMAIL OTP) -->
+    <div id="forgot-password-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-sm w-full p-6">
+            <h3 class="font-bold text-lg text-slate-800 mb-2">Reset Password via Email</h3>
+            <p class="text-xs text-slate-500 mb-4">Enter your registered email address. An OTP verification code will be sent.</p>
+            <form onsubmit="handleForgotPasswordSubmit(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Registered Email Address</label>
+                    <input type="email" id="reset-email" required class="w-full border px-3 py-2 rounded outline-none focus:ring-1 focus:ring-amber-500" placeholder="user@kandy.gov.lk">
+                </div>
+                <div id="reset-step-2" class="hidden space-y-3 pt-2 border-t">
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Email OTP Code</label>
+                        <input type="text" id="reset-otp" placeholder="Enter OTP code" class="w-full border px-3 py-2 rounded outline-none focus:ring-1 focus:ring-amber-500">
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">New Password</label>
+                        <input type="password" id="reset-new-pass" placeholder="••••••••" class="w-full border px-3 py-2 rounded outline-none focus:ring-1 focus:ring-amber-500">
+                    </div>
+                </div>
+                <div class="flex justify-end gap-2 pt-2">
+                    <button type="button" onclick="closeForgotPasswordModal()" class="px-3 py-1.5 rounded text-xs text-slate-600 bg-slate-100 hover:bg-slate-200">Cancel</button>
+                    <button type="submit" id="btn-reset-action" class="px-4 py-1.5 rounded text-xs text-white bg-amber-950 hover:bg-amber-900 font-semibold">Send Email OTP</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- NGO PROFILE MODAL -->
+    <div id="ngo-profile-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-md w-full p-6">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h3 class="font-bold text-lg text-slate-800">NGO Organization Profile</h3>
+                <button onclick="closeNgoProfileModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form onsubmit="handleSaveNgoProfile(event)" class="space-y-3 text-xs">
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Organization Name</label>
+                    <input type="text" id="prof-ngo-name" required class="w-full border px-3 py-2 rounded outline-none focus:ring-1 focus:ring-amber-500">
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Registration Number</label>
+                    <input type="text" id="prof-ngo-reg" required class="w-full border px-3 py-2 rounded outline-none focus:ring-1 focus:ring-amber-500">
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Official Email Address</label>
+                    <input type="email" id="prof-email" readonly class="w-full border px-3 py-2 rounded bg-slate-50 text-slate-500">
+                </div>
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Contact Person & Phone Number</label>
+                    <input type="text" id="prof-contact" required class="w-full border px-3 py-2 rounded outline-none focus:ring-1 focus:ring-amber-500">
+                </div>
+                <div class="flex justify-end gap-2 pt-3 border-t">
+                    <button type="button" onclick="closeNgoProfileModal()" class="px-3 py-1.5 bg-slate-100 text-slate-700 rounded font-semibold">Cancel</button>
+                    <button type="submit" class="px-4 py-1.5 bg-emerald-700 text-white rounded font-semibold">Save Profile</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ADMIN CONFIG MODAL (MANAGE DISTRICTS & DIVISIONS) -->
+    <div id="admin-config-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-lg w-full p-6">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h3 class="font-bold text-lg text-slate-800">Developer & District Configuration Panel</h3>
+                <button onclick="closeAdminConfigModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            
+            <div class="space-y-4 text-xs">
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Add New District</label>
+                    <div class="flex gap-2">
+                        <input type="text" id="input-new-district" placeholder="e.g. Matale" class="flex-1 border px-3 py-1.5 rounded outline-none focus:ring-1 focus:ring-amber-500">
+                        <button onclick="addDistrict()" class="bg-slate-800 hover:bg-slate-900 text-white px-3 py-1.5 rounded font-semibold">Add District</button>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Select District</label>
+                    <select id="admin-district-select" onchange="renderAdminDivisionsList()" class="w-full border px-3 py-1.5 rounded outline-none focus:ring-1 focus:ring-amber-500 mb-2">
+                        <!-- Dynamic Options -->
+                    </select>
+
+                    <label class="block font-semibold text-slate-700 mb-1">Add New DS Division</label>
+                    <div class="flex gap-2 mb-3">
+                        <input type="text" id="input-new-division" placeholder="e.g. Akurana" class="flex-1 border px-3 py-1.5 rounded outline-none focus:ring-1 focus:ring-amber-500">
+                        <button onclick="addDivision()" class="bg-emerald-700 hover:bg-emerald-800 text-white px-3 py-1.5 rounded font-semibold">Add Division</button>
+                    </div>
+
+                    <label class="block font-semibold text-slate-700 mb-1">Active DS Divisions List:</label>
+                    <div id="admin-divisions-list" class="max-h-36 overflow-y-auto border rounded bg-slate-50 p-2 space-y-1">
+                        <!-- Dynamic List -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-end pt-4 border-t mt-4">
+                <button onclick="closeAdminConfigModal()" class="px-4 py-2 bg-slate-200 text-slate-700 rounded text-xs font-semibold">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PROJECT SUBMISSION / EDIT MODAL -->
+    <div id="project-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-2xl w-full p-6 max-h-[90vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <h3 class="font-bold text-lg text-slate-800" id="project-modal-title">Submit New NGO Project Proposal</h3>
+                <button onclick="closeProjectModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form onsubmit="handleProjectSubmit(event)" class="space-y-4 text-xs">
+                <input type="hidden" id="editing-project-id" value="">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">NGO Organization Name</label>
+                        <input type="text" id="input-ngo-name" required class="w-full border px-3 py-2 rounded-md outline-none focus:ring-1 focus:ring-amber-500 bg-slate-50" readonly>
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">NGO Registration No.</label>
+                        <input type="text" id="input-ngo-reg" required class="w-full border px-3 py-2 rounded-md outline-none focus:ring-1 focus:ring-amber-500" placeholder="e.g. KDS/10/1/NGO/137">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Project Title</label>
+                    <input type="text" id="input-project-title" required class="w-full border px-3 py-2 rounded-md outline-none focus:ring-1 focus:ring-amber-500" placeholder="e.g. Youth Empowerment Project">
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">District</label>
+                        <select id="input-district" onchange="populateDsDivisionsDropdown()" required class="w-full border px-3 py-2 rounded-md outline-none focus:ring-1 focus:ring-amber-500">
+                            <!-- Dynamic Options -->
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Target DS Division</label>
+                        <select id="input-ds-division" required class="w-full border px-3 py-2 rounded-md outline-none focus:ring-1 focus:ring-amber-500">
+                            <!-- Dynamic Options -->
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-slate-700 mb-1">Estimated Budget (LKR)</label>
+                        <input type="number" id="input-budget" required class="w-full border px-3 py-2 rounded-md outline-none focus:ring-1 focus:ring-amber-500" placeholder="50000000">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Executive Summary & Objectives</label>
+                    <textarea id="input-summary" rows="3" required class="w-full border px-3 py-2 rounded-md outline-none focus:ring-1 focus:ring-amber-500" placeholder="Briefly describe project scope, beneficiaries, and timeline..."></textarea>
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-slate-700 mb-1">Project Proposal Document (PDF)</label>
+                    <input type="file" id="input-pdf-file" accept=".pdf" class="w-full border px-3 py-1.5 rounded-md bg-slate-50 text-slate-500">
+                    <p class="text-[10px] text-slate-400 mt-1">Upload PDF document containing budget breakdown and DS recommendation.</p>
+                </div>
+
+                <div class="flex justify-end gap-2 pt-3 border-t">
+                    <button type="button" onclick="closeProjectModal()" class="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-md font-semibold">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-emerald-700 hover:bg-emerald-800 text-white rounded-md font-semibold shadow" id="btn-save-project">Submit Proposal</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- PROJECT REVIEW & APPROVAL MODAL -->
+    <div id="review-modal" class="hidden fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-3xl w-full p-6 max-h-[92vh] overflow-y-auto">
+            <div class="flex justify-between items-center border-b pb-3 mb-4">
+                <div>
+                    <span id="review-ref" class="text-xs font-bold text-amber-800 bg-amber-100 px-2 py-0.5 rounded">REF: -</span>
+                    <h3 id="review-title" class="font-bold text-lg text-slate-800 mt-1">Project Approval Details</h3>
+                </div>
+                <button onclick="closeReviewModal()" class="text-slate-400 hover:text-slate-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <!-- Approval Stepper -->
+            <div class="mb-6 bg-slate-50 p-4 rounded-lg border border-slate-200">
+                <p class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-3">5-Stage Approval Progress:</p>
+                <div class="grid grid-cols-5 text-center text-[10px] font-semibold gap-1" id="stepper-container">
+                    <!-- Dynamic Stepper -->
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs mb-6">
+                <div class="p-3 bg-slate-50 rounded border">
+                    <p class="text-slate-400">NGO Organization:</p>
+                    <p class="font-bold text-slate-800" id="review-ngo">-</p>
+                    <p class="text-slate-400 mt-2">Registration No:</p>
+                    <p class="font-semibold text-slate-700" id="review-ngo-reg">-</p>
+                </div>
+                <div class="p-3 bg-slate-50 rounded border">
+                    <p class="text-slate-400">District & DS Division:</p>
+                    <p class="font-bold text-slate-800" id="review-ds-div">-</p>
+                    <p class="text-slate-400 mt-2">Proposed Budget:</p>
+                    <p class="font-bold text-emerald-700 text-sm" id="review-budget">-</p>
+                </div>
+            </div>
+
+            <div class="text-xs mb-6">
+                <h4 class="font-bold text-slate-700 mb-1">Project Scope:</h4>
+                <p id="review-summary" class="bg-slate-50 p-3 rounded border text-slate-600 leading-relaxed"></p>
+            </div>
+
+            <!-- PDF Attachment Preview / Download Section -->
+            <div id="pdf-attachment-section" class="mb-6 p-3 bg-amber-50 rounded border border-amber-200 text-xs flex justify-between items-center">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-file-pdf text-red-600 text-lg"></i>
+                    <div>
+                        <p class="font-bold text-slate-800" id="pdf-filename">Proposal_Document.pdf</p>
+                        <p class="text-[10px] text-slate-500">Uploaded Proposal PDF file</p>
+                    </div>
+                </div>
+                <div class="space-x-2">
+                    <button onclick="previewPdf()" class="bg-amber-950 hover:bg-amber-900 text-white px-3 py-1.5 rounded font-semibold">
+                        <i class="fa-solid fa-eye"></i> Preview
+                    </button>
+                    <a id="download-pdf-link" href="#" download="Proposal.pdf" class="bg-slate-700 hover:bg-slate-800 text-white px-3 py-1.5 rounded font-semibold inline-block">
+                        <i class="fa-solid fa-download"></i> Download
+                    </a>
+                </div>
+            </div>
+
+            <!-- Officer Action Form -->
+            <div id="officer-action-section" class="border-t pt-4 bg-amber-50/50 p-4 rounded-lg border border-amber-200 mb-6">
+                <h4 class="font-bold text-xs text-amber-900 mb-2 uppercase flex items-center gap-1">
+                    <i class="fa-solid fa-pen-to-square"></i> Officer Decision & Remarks
+                </h4>
+                <textarea id="officer-remarks" rows="2" class="w-full text-xs p-2 border rounded border-amber-300 outline-none focus:ring-1 focus:ring-amber-500 bg-white" placeholder="Enter official remarks or recommendations..."></textarea>
+                
+                <div class="flex flex-wrap justify-end gap-2 mt-3">
+                    <button onclick="submitOfficerDecision('rejected')" class="bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-1.5 rounded font-semibold transition">
+                        Reject Proposal
+                    </button>
+                    <button onclick="submitOfficerDecision('approved')" class="bg-emerald-700 hover:bg-emerald-800 text-white text-xs px-4 py-1.5 rounded font-semibold transition shadow" id="btn-approve-action">
+                        Approve & Forward to Next Stage
+                    </button>
+                </div>
+            </div>
+
+            <!-- Audit History Log -->
+            <div class="text-xs">
+                <h4 class="font-bold text-slate-700 mb-2">Audit History:</h4>
+                <div id="audit-log-container" class="space-y-2 max-h-40 overflow-y-auto">
+                    <!-- Audit items -->
+                </div>
+            </div>
+
+            <div class="flex justify-between items-center border-t pt-4 mt-6">
+                <button id="btn-view-certificate" onclick="generateApprovalCertificate()" class="hidden bg-amber-950 hover:bg-amber-900 text-white text-xs px-4 py-2 rounded font-semibold shadow flex items-center gap-2">
+                    <i class="fa-solid fa-certificate"></i> Print Official Approval Letter
+                </button>
+                <button onclick="closeReviewModal()" class="px-4 py-2 bg-slate-200 text-slate-700 rounded text-xs font-semibold ml-auto">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- PRINTABLE OFFICIAL CERTIFICATE / LETTER -->
+    <div id="printable-area" class="hidden">
+        <div class="max-w-3xl mx-auto p-8 bg-white text-slate-900 font-serif border-4 border-double border-amber-950 m-4">
+            <div class="text-center border-b-2 border-slate-900 pb-4 mb-6">
+                <h2 class="text-xl font-bold uppercase tracking-wider">District Secretariat - Kandy</h2>
+                <h3 class="text-md font-semibold text-slate-700">DISTRICT SECRETARIAT - KANDY</h3>
+                <p class="text-xs italic font-sans text-slate-500">Government of the Democratic Socialist Republic of Sri Lanka</p>
+                <div class="mt-2 text-xs font-sans flex justify-between px-4 text-slate-600">
+                    <span>Reference No: <strong id="cert-ref-no">DS/KND/NGO/2026/001</strong></span>
+                    <span>Date: <strong id="cert-date">-</strong></span>
+                </div>
+            </div>
+
+            <div class="space-y-4 text-sm font-sans leading-relaxed">
+                <div class="text-center font-bold text-base text-amber-950 uppercase underline decoration-amber-950 underline-offset-4 mb-6">
+                    OFFICIAL NGO PROJECT APPROVAL GRANT
+                </div>
+
+                <p>This is to formally certify that the project proposal submitted by <strong><span id="cert-ngo-name">NGO</span></strong> (Registration No: <strong><span id="cert-ngo-reg">REG</span></strong>) has been fully evaluated and approved by the District Coordination Committee.</p>
+
+                <div class="bg-slate-50 p-4 border rounded font-sans text-xs space-y-1">
+                    <p><strong>Project Title:</strong> <span id="cert-project-title">-</span></p>
+                    <p><strong>Approved District & DS Division:</strong> <span id="cert-ds-division">-</span></p>
+                    <p><strong>Total Approved Budget:</strong> <span id="cert-budget">LKR 0</span></p>
+                </div>
+
+                <p class="text-xs">Under the authority vested in the District Secretariat, approval is hereby granted to execute this project under the supervision of the Divisional Secretariat.</p>
+
+                <div class="pt-12 flex justify-between items-end text-xs font-sans">
+                    <div class="text-center">
+                        <div id="qrcode" class="mb-2 flex justify-center"></div>
+                        <p class="text-[10px] text-slate-400">Digital Verification QR Code</p>
+                    </div>
+
+                    <div class="text-center">
+                        <div class="w-32 border-b border-slate-900 mx-auto mb-1"></div>
+                        <p class="font-bold">District Secretary</p>
+                        <p class="text-slate-600">District Secretariat - Kandy</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        let currentUser = null;
+        let selectedProjectId = null;
+        let tempActivationEmail = null;
+        let generatedResetOtp = null;
+
+        const STAGES = {
+            1: { name: 'Submitted by NGO', roleAllowed: 'ngo_coordinator' },
+            2: { name: 'Coordinator Recommended', roleAllowed: 'ads' },
+            3: { name: 'Assistant DS Reviewed', roleAllowed: 'auth_officer' },
+            4: { name: 'Authorized Officer Approved', roleAllowed: 'ds' },
+            5: { name: 'District Secretary Final Approval Granted', roleAllowed: null }
+        };
+
+        // Real production initial base accounts
+        const DEFAULT_ACCOUNTS = [
+            { email: 'admin@kandy.gov.lk', pass: 'admin123', name: 'System Developer & Master Admin', role: 'admin', ngoName: null, status: 'active' },
+            { email: 'ds@kandy.gov.lk', pass: 'ds123', name: 'District Secretary (DS Kandy)', role: 'ds', ngoName: null, status: 'active' },
+            { email: 'coordinator@kandy.gov.lk', pass: 'coord123', name: 'A. Perera (NGO Coordinator)', role: 'ngo_coordinator', ngoName: null, status: 'active' }
+        ];
+
+        const INITIAL_DISTRICTS_DATA = {
+            "Kandy": ["Gangawata Korale", "Yatinuwara", "Udunuwara", "Kundasale", "Pathadumbara", "Panvila", "Harispattuwa"],
+            "Matale": ["Matale", "Dambulla", "Rattota", "Galewela"],
+            "Nuwara Eliya": ["Nuwara Eliya", "Ambagamuwa", "Walapane"]
+        };
+
+        const INITIAL_PROJECTS = [];
+
+        // Database Helpers
+        function getUsers() {
+            const data = localStorage.getItem('kandy_system_users');
+            return data ? JSON.parse(data) : DEFAULT_ACCOUNTS;
+        }
+        function saveUsers(users) { localStorage.setItem('kandy_system_users', JSON.stringify(users)); }
+
+        function getProjects() {
+            const data = localStorage.getItem('kandy_ngo_projects');
+            return data ? JSON.parse(data) : INITIAL_PROJECTS;
+        }
+        function saveProjects(projects) { localStorage.setItem('kandy_ngo_projects', JSON.stringify(projects)); }
+
+        function getDistrictsData() {
+            const data = localStorage.getItem('kandy_districts_data');
+            return data ? JSON.parse(data) : INITIAL_DISTRICTS_DATA;
+        }
+        function saveDistrictsData(data) { localStorage.setItem('kandy_districts_data', JSON.stringify(data)); }
+
+        window.onload = function() {
+            if (!localStorage.getItem('kandy_system_users')) saveUsers(DEFAULT_ACCOUNTS);
+            if (!localStorage.getItem('kandy_ngo_projects')) saveProjects(INITIAL_PROJECTS);
+            if (!localStorage.getItem('kandy_districts_data')) saveDistrictsData(INITIAL_DISTRICTS_DATA);
+        };
+
+        function switchAuthTab(tab) {
+            const loginContainer = document.getElementById('form-login-container');
+            const regContainer = document.getElementById('form-register-container');
+            const tabBtnLogin = document.getElementById('tab-btn-login');
+            const tabBtnReg = document.getElementById('tab-btn-register');
+
+            if (tab === 'login') {
+                loginContainer.classList.remove('hidden');
+                regContainer.classList.add('hidden');
+                tabBtnLogin.className = "flex-1 py-2 font-bold text-amber-950 border-b-2 border-amber-950 text-sm";
+                tabBtnReg.className = "flex-1 py-2 font-semibold text-slate-400 hover:text-slate-600 text-sm";
+            } else {
+                loginContainer.classList.add('hidden');
+                regContainer.classList.remove('hidden');
+                tabBtnReg.className = "flex-1 py-2 font-bold text-amber-950 border-b-2 border-amber-950 text-sm";
+                tabBtnLogin.className = "flex-1 py-2 font-semibold text-slate-400 hover:text-slate-600 text-sm";
+            }
+        }
+
+        function handleNgoRegister(e) {
+            e.preventDefault();
+            const users = getUsers();
+            const email = document.getElementById('reg-email').value.trim();
+
+            if (users.find(u => u.email === email)) {
+                showToast('This email address is already registered!', 'error');
+                return;
+            }
+
+            const ngoName = document.getElementById('reg-ngo-name').value.trim();
+            const regNo = document.getElementById('reg-ngo-number').value.trim();
+            const pass = document.getElementById('reg-pass').value;
+            const contact = document.getElementById('reg-contact').value;
+
+            const newUser = { email, pass, name: ngoName, role: 'ngo_rep', ngoName, regNo, contact, status: 'active' };
+            users.push(newUser);
+            saveUsers(users);
+
+            currentUser = newUser;
+            showToast('NGO Account created successfully!', 'success');
+            renderApp();
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('login-email').value.trim();
+            const pass = document.getElementById('login-password').value;
+
+            const users = getUsers();
+            const user = users.find(u => u.email === email && u.pass === pass);
+            if (user) {
+                if (user.status === 'pending_activation') {
+                    tempActivationEmail = email;
+                    document.getElementById('act-email').value = email;
+                    document.getElementById('activation-modal').classList.remove('hidden');
+                    showToast('Enter the SMS OTP code to activate your account.', 'info');
+                    return;
+                }
+                currentUser = user;
+                showToast(`Welcome back, ${user.name}!`, 'success');
+                renderApp();
+            } else {
+                showToast('Invalid Email or Password!', 'error');
+            }
+        }
+
+        function logout() {
+            currentUser = null;
+            document.getElementById('auth-view').classList.remove('hidden');
+            document.getElementById('dashboard-view').classList.add('hidden');
+            document.getElementById('header-user-info').classList.add('hidden');
+            showToast('Logged out successfully', 'info');
+        }
+
+        // DS Officer Invitation
+        function showDsOfficerModal() {
+            renderDsOfficersList();
+            document.getElementById('ds-officer-modal').classList.remove('hidden');
+        }
+        function closeDsOfficerModal() { document.getElementById('ds-officer-modal').classList.add('hidden'); }
+
+        function renderDsOfficersList() {
+            const users = getUsers();
+            const container = document.getElementById('ds-officers-list');
+            container.innerHTML = '';
+            const staff = users.filter(u => u.role !== 'ngo_rep');
+            staff.forEach((u) => {
+                container.innerHTML += `
+                    <div class="flex justify-between items-center bg-white p-2 rounded border text-xs">
+                        <div>
+                            <p class="font-bold text-slate-800">${u.name} (${u.role.toUpperCase()})</p>
+                            <p class="text-[10px] text-slate-500">${u.email} | Phone: ${u.phone || 'N/A'}</p>
+                        </div>
+                        <span class="px-2 py-0.5 rounded text-[10px] font-bold ${u.status === 'pending_activation' ? 'bg-amber-100 text-amber-800' : 'bg-emerald-100 text-emerald-800'}">
+                            ${u.status === 'pending_activation' ? 'Pending Activation' : 'Active'}
+                        </span>
+                    </div>
+                `;
+            });
+        }
+
+        function handleDsAddOfficer(e) {
+            e.preventDefault();
+            const name = document.getElementById('ds-new-name').value.trim();
+            const email = document.getElementById('ds-new-email').value.trim();
+            const phone = document.getElementById('ds-new-phone').value.trim();
+            const role = document.getElementById('ds-new-role').value;
+
+            const users = getUsers();
+            if (users.find(u => u.email === email)) {
+                showToast('This email address already exists in the system!', 'error');
+                return;
+            }
+
+            const smsOtp = Math.floor(100000 + Math.random() * 900000);
+            const newOfficer = {
+                email, pass: '', name, role, ngoName: null, phone, smsOtp: String(smsOtp), status: 'pending_activation'
+            };
+
+            users.push(newOfficer);
+            saveUsers(users);
+
+            alert(`[SMS Notification (${phone})]: Your District Secretariat OTP code is ${smsOtp}`);
+            showToast('Officer invitation and SMS OTP dispatched!', 'success');
+            renderDsOfficersList();
+            document.getElementById('ds-new-name').value = '';
+            document.getElementById('ds-new-email').value = '';
+            document.getElementById('ds-new-phone').value = '';
+        }
+
+        function handleOfficerActivation(e) {
+            e.preventDefault();
+            const otp = document.getElementById('act-otp').value.trim();
+            const newPass = document.getElementById('act-password').value;
+
+            const users = getUsers();
+            const u = users.find(item => item.email === tempActivationEmail);
+            if (u && u.smsOtp === otp) {
+                u.pass = newPass;
+                u.status = 'active';
+                delete u.smsOtp;
+                saveUsers(users);
+                document.getElementById('activation-modal').classList.add('hidden');
+                showToast('Account activated! Please sign in.', 'success');
+                switchAuthTab('login');
+            } else {
+                showToast('Invalid SMS OTP Code!', 'error');
+            }
+        }
+
+        // Email OTP Password Reset
+        function showForgotPasswordModal() { document.getElementById('forgot-password-modal').classList.remove('hidden'); }
+        function closeForgotPasswordModal() { document.getElementById('forgot-password-modal').classList.add('hidden'); document.getElementById('reset-step-2').classList.add('hidden'); document.getElementById('btn-reset-action').innerText = 'Send Email OTP'; }
+
+        function handleForgotPasswordSubmit(e) {
+            e.preventDefault();
+            const email = document.getElementById('reset-email').value.trim();
+            const users = getUsers();
+            const u = users.find(item => item.email === email);
+
+            if (!u) {
+                showToast('Email address not found!', 'error');
+                return;
+            }
+
+            const step2 = document.getElementById('reset-step-2');
+            if (step2.classList.contains('hidden')) {
+                generatedResetOtp = String(Math.floor(100000 + Math.random() * 900000));
+                alert(`[Email Notification (${email})]: Password reset OTP code is ${generatedResetOtp}`);
+                step2.classList.remove('hidden');
+                document.getElementById('btn-reset-action').innerText = 'Verify & Reset Password';
+                showToast('OTP code dispatched to your email!', 'info');
+            } else {
+                const enteredOtp = document.getElementById('reset-otp').value.trim();
+                const newPass = document.getElementById('reset-new-pass').value;
+
+                if (enteredOtp === generatedResetOtp) {
+                    u.pass = newPass;
+                    saveUsers(users);
+                    closeForgotPasswordModal();
+                    showToast('Password reset successfully!', 'success');
+                } else {
+                    showToast('Invalid Email OTP Code!', 'error');
+                }
+            }
+        }
+
+        // Render Dashboard View
+        function renderApp() {
+            document.getElementById('auth-view').classList.add('hidden');
+            document.getElementById('dashboard-view').classList.remove('hidden');
+            document.getElementById('header-user-info').classList.remove('hidden');
+
+            document.getElementById('user-display-name').innerText = currentUser.name;
+            document.getElementById('user-display-role').innerText = currentUser.role.toUpperCase();
+            document.getElementById('role-badge').innerText = currentUser.role.toUpperCase();
+
+            const isNgo = currentUser.role === 'ngo_rep';
+            const isDs = currentUser.role === 'ds';
+            const isAdmin = currentUser.role === 'admin';
+
+            document.getElementById('btn-add-project').classList.toggle('hidden', !isNgo);
+            document.getElementById('btn-ngo-profile').classList.toggle('hidden', !isNgo);
+            document.getElementById('btn-ds-officers').classList.toggle('hidden', !isDs);
+            document.getElementById('btn-admin-config').classList.toggle('hidden', !isAdmin && !isDs);
+
+            if (isNgo) {
+                document.getElementById('dashboard-heading').innerText = `${currentUser.ngoName}`;
+                document.getElementById('dashboard-subheading').innerText = 'Private NGO Management Portal';
+                document.getElementById('table-heading').innerText = `Proposals Submitted by Your NGO`;
+            } else {
+                document.getElementById('dashboard-heading').innerText = 'District Secretariat Control Portal';
+                document.getElementById('dashboard-subheading').innerText = 'All NGO Project Proposals Approval Matrix';
+                document.getElementById('table-heading').innerText = 'All Registered Project Proposals Matrix';
+            }
+
+            renderTable();
+        }
+
+        function renderTable() {
+            const allProjects = getProjects();
+            const tbody = document.getElementById('projects-table-body');
+            tbody.innerHTML = '';
+
+            const projects = (currentUser.role === 'ngo_rep') 
+                ? allProjects.filter(p => p.ngo === currentUser.ngoName)
+                : allProjects;
+
+            let totalBudget = 0;
+            let pendingCount = 0;
+            let approvedCount = 0;
+
+            projects.forEach(p => {
+                if (p.currentStage === 5) {
+                    approvedCount++;
+                    totalBudget += Number(p.budget);
+                } else if (p.status !== 'rejected') {
+                    pendingCount++;
+                }
+
+                const isRejected = p.status === 'rejected';
+                const stageName = isRejected ? 'Rejected' : STAGES[p.currentStage].name;
+                
+                const canEdit = (currentUser.role === 'ngo_rep' && p.ngo === currentUser.ngoName) || 
+                                (currentUser.role === 'ngo_coordinator') || 
+                                (currentUser.role === 'ds') || 
+                                (currentUser.role === 'admin');
+
+                const tr = document.createElement('tr');
+                tr.className = "hover:bg-slate-50 transition";
+                tr.innerHTML = `
+                    <td class="p-3 font-bold text-slate-700">${p.id}</td>
+                    <td class="p-3">
+                        <p class="font-bold text-slate-800">${p.title}</p>
+                        <p class="text-[11px] text-slate-500">${p.ngo}</p>
+                    </td>
+                    <td class="p-3 text-slate-600">${p.district} (${p.dsDivision})</td>
+                    <td class="p-3 font-semibold text-slate-700">LKR ${Number(p.budget).toLocaleString()}</td>
+                    <td class="p-3">
+                        <span class="px-2 py-1 rounded-full text-[10px] font-bold ${
+                            isRejected ? 'bg-red-100 text-red-700' :
+                            p.currentStage === 5 ? 'bg-emerald-100 text-emerald-800' : 'bg-amber-100 text-amber-900'
+                        }">
+                            Stage ${p.currentStage}/5: ${stageName}
+                        </span>
+                    </td>
+                    <td class="p-3 text-right space-x-1">
+                        ${canEdit ? `
+                            <button onclick="showProjectModal('${p.id}')" class="bg-slate-700 hover:bg-slate-800 text-white px-2.5 py-1 rounded font-semibold text-[11px]" title="Edit">
+                                <i class="fa-solid fa-pen"></i> Edit
+                            </button>
+                        ` : ''}
+                        <button onclick="openReviewModal('${p.id}')" class="bg-amber-950 hover:bg-amber-900 text-white px-3 py-1 rounded font-semibold text-[11px]">
+                            Review
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('stat-total').innerText = projects.length;
+            document.getElementById('stat-pending').innerText = pendingCount;
+            document.getElementById('stat-approved').innerText = approvedCount;
+            document.getElementById('stat-budget').innerText = `LKR ${totalBudget.toLocaleString()}`;
+        }
+
+        // NGO Profile
+        function showNgoProfileModal() {
+            document.getElementById('prof-ngo-name').value = currentUser.ngoName || currentUser.name;
+            document.getElementById('prof-ngo-reg').value = currentUser.regNo || '';
+            document.getElementById('prof-email').value = currentUser.email;
+            document.getElementById('prof-contact').value = currentUser.contact || '';
+            document.getElementById('ngo-profile-modal').classList.remove('hidden');
+        }
+        function closeNgoProfileModal() { document.getElementById('ngo-profile-modal').classList.add('hidden'); }
+        
+        function handleSaveNgoProfile(e) {
+            e.preventDefault();
+            const users = getUsers();
+            const u = users.find(item => item.email === currentUser.email);
+            if (u) {
+                u.ngoName = document.getElementById('prof-ngo-name').value;
+                u.name = u.ngoName;
+                u.regNo = document.getElementById('prof-ngo-reg').value;
+                u.contact = document.getElementById('prof-contact').value;
+                currentUser = u;
+                saveUsers(users);
+                showToast('Profile updated successfully!', 'success');
+                closeNgoProfileModal();
+                renderApp();
+            }
+        }
+
+        // Project Form Handlers
+        function showProjectModal(editId = null) {
+            populateDistrictDropdown();
+            
+            if (editId) {
+                const projects = getProjects();
+                const p = projects.find(item => item.id === editId);
+                if (!p) return;
+
+                document.getElementById('project-modal-title').innerText = 'Edit NGO Project Proposal';
+                document.getElementById('editing-project-id').value = p.id;
+                document.getElementById('input-ngo-name').value = p.ngo;
+                document.getElementById('input-ngo-reg').value = p.ngoReg;
+                document.getElementById('input-project-title').value = p.title;
+                document.getElementById('input-district').value = p.district || 'Kandy';
+                populateDsDivisionsDropdown();
+                document.getElementById('input-ds-division').value = p.dsDivision;
+                document.getElementById('input-budget').value = p.budget;
+                document.getElementById('input-summary').value = p.summary;
+                document.getElementById('btn-save-project').innerText = 'Save Changes';
+            } else {
+                document.getElementById('project-modal-title').innerText = 'Submit New NGO Project Proposal';
+                document.getElementById('editing-project-id').value = '';
+                document.getElementById('input-ngo-name').value = currentUser.ngoName || currentUser.name;
+                document.getElementById('input-ngo-reg').value = currentUser.regNo || '';
+                document.getElementById('input-project-title').value = '';
+                document.getElementById('input-district').value = 'Kandy';
+                populateDsDivisionsDropdown();
+                document.getElementById('input-budget').value = '';
+                document.getElementById('input-summary').value = '';
+                document.getElementById('btn-save-project').innerText = 'Submit Proposal';
+            }
+
+            document.getElementById('project-modal').classList.remove('hidden');
+        }
+
+        function closeProjectModal() { document.getElementById('project-modal').classList.add('hidden'); }
+
+        function populateDistrictDropdown() {
+            const data = getDistrictsData();
+            const select = document.getElementById('input-district');
+            select.innerHTML = '';
+            Object.keys(data).forEach(d => {
+                select.innerHTML += `<option value="${d}">${d}</option>`;
+            });
+        }
+
+        function populateDsDivisionsDropdown() {
+            const data = getDistrictsData();
+            const selectedDistrict = document.getElementById('input-district').value;
+            const select = document.getElementById('input-ds-division');
+            select.innerHTML = '';
+            const divisions = data[selectedDistrict] || [];
+            divisions.forEach(div => {
+                select.innerHTML += `<option value="${div}">${div}</option>`;
+            });
+        }
+
+        function handleProjectSubmit(e) {
+            e.preventDefault();
+            const fileInput = document.getElementById('input-pdf-file');
+            let pdfName = 'Proposal_Document.pdf';
+
+            if (fileInput.files && fileInput.files[0]) {
+                pdfName = fileInput.files[0].name;
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    finishProjectSave(evt.target.result, pdfName);
+                };
+                reader.readAsDataURL(fileInput.files[0]);
+            } else {
+                finishProjectSave('', pdfName);
+            }
+        }
+
+        function finishProjectSave(pdfDataUrl, pdfName) {
+            const projects = getProjects();
+            const editingId = document.getElementById('editing-project-id').value;
+
+            if (editingId) {
+                const p = projects.find(item => item.id === editingId);
+                if (p) {
+                    p.title = document.getElementById('input-project-title').value;
+                    p.ngoReg = document.getElementById('input-ngo-reg').value;
+                    p.district = document.getElementById('input-district').value;
+                    p.dsDivision = document.getElementById('input-ds-division').value;
+                    p.budget = document.getElementById('input-budget').value;
+                    p.summary = document.getElementById('input-summary').value;
+                    if (pdfDataUrl) {
+                        p.pdfDataUrl = pdfDataUrl;
+                        p.pdfName = pdfName;
+                    }
+                    showToast(`Project ${editingId} updated!`, 'success');
+                }
+            } else {
+                const newId = `PROJ-2026-00${projects.length + 1}`;
+                const newProject = {
+                    id: newId,
+                    title: document.getElementById('input-project-title').value,
+                    ngo: currentUser.ngoName || document.getElementById('input-ngo-name').value,
+                    ngoReg: document.getElementById('input-ngo-reg').value,
+                    district: document.getElementById('input-district').value,
+                    dsDivision: document.getElementById('input-ds-division').value,
+                    budget: document.getElementById('input-budget').value,
+                    summary: document.getElementById('input-summary').value,
+                    currentStage: 1,
+                    status: 'pending',
+                    pdfDataUrl: pdfDataUrl || '',
+                    pdfName: pdfName,
+                    auditLog: [
+                        { stage: 1, user: currentUser.name, action: 'Submitted Proposal', remarks: 'Initial proposal submission with PDF.', date: new Date().toISOString().split('T')[0] }
+                    ]
+                };
+                projects.push(newProject);
+                showToast(`Project ${newId} submitted successfully!`, 'success');
+            }
+
+            saveProjects(projects);
+            closeProjectModal();
+            renderTable();
+        }
+
+        // Review & Action Modal
+        function openReviewModal(projId) {
+            selectedProjectId = projId;
+            const projects = getProjects();
+            const p = projects.find(item => item.id === projId);
+            if (!p) return;
+
+            document.getElementById('review-ref').innerText = `REF: ${p.id}`;
+            document.getElementById('review-title').innerText = p.title;
+            document.getElementById('review-ngo').innerText = p.ngo;
+            document.getElementById('review-ngo-reg').innerText = p.ngoReg;
+            document.getElementById('review-ds-div').innerText = `${p.district || 'Kandy'} (${p.dsDivision})`;
+            document.getElementById('review-budget').innerText = `LKR ${Number(p.budget).toLocaleString()}`;
+            document.getElementById('review-summary').innerText = p.summary;
+
+            document.getElementById('pdf-filename').innerText = p.pdfName || 'Proposal_Document.pdf';
+            const dlLink = document.getElementById('download-pdf-link');
+            dlLink.href = p.pdfDataUrl || '#';
+            dlLink.download = p.pdfName || 'Proposal.pdf';
+
+            const stepper = document.getElementById('stepper-container');
+            stepper.innerHTML = '';
+            for (let i = 1; i <= 5; i++) {
+                const isActive = p.currentStage >= i;
+                const isCurrent = p.currentStage === i;
+                stepper.innerHTML += `
+                    <div class="p-2 rounded border ${isCurrent ? 'bg-amber-950 text-white font-bold border-amber-950' : isActive ? 'bg-emerald-100 text-emerald-800 border-emerald-300' : 'bg-white text-slate-400 border-slate-200'}">
+                        Step ${i}<br>${i === 5 ? 'Grant' : 'Review'}
+                    </div>
+                `;
+            }
+
+            const auditContainer = document.getElementById('audit-log-container');
+            auditContainer.innerHTML = '';
+            p.auditLog.forEach(log => {
+                auditContainer.innerHTML += `
+                    <div class="p-2 rounded bg-slate-50 border border-slate-200">
+                        <div class="flex justify-between font-bold text-slate-700">
+                            <span>Stage ${log.stage}: ${log.user} (${log.action})</span>
+                            <span class="text-slate-400 font-normal">${log.date}</span>
+                        </div>
+                        <p class="text-slate-500 mt-0.5">${log.remarks}</p>
+                    </div>
+                `;
+            });
+
+            const actionSec = document.getElementById('officer-action-section');
+            const requiredRole = STAGES[p.currentStage]?.roleAllowed;
+            const canApprove = (currentUser.role === requiredRole || currentUser.role === 'ds' || currentUser.role === 'admin') && p.status !== 'rejected';
+
+            if (canApprove) {
+                actionSec.classList.remove('hidden');
+                document.getElementById('btn-approve-action').innerText = (p.currentStage === 4) ? 'Grant District Secretary Final Approval' : 'Approve & Forward to Next Stage';
+            } else {
+                actionSec.classList.add('hidden');
+            }
+
+            const certBtn = document.getElementById('btn-view-certificate');
+            if (p.currentStage === 5) certBtn.classList.remove('hidden');
+            else certBtn.classList.add('hidden');
+
+            document.getElementById('review-modal').classList.remove('hidden');
+        }
+
+        function closeReviewModal() { document.getElementById('review-modal').classList.add('hidden'); }
+
+        function previewPdf() {
+            const projects = getProjects();
+            const p = projects.find(item => item.id === selectedProjectId);
+            if (p && p.pdfDataUrl) {
+                let w = window.open('');
+                w.document.write(`<iframe src="${p.pdfDataUrl}" width="100%" height="100%" style="border:none;"></iframe>`);
+            } else {
+                showToast('No PDF document uploaded for this proposal.', 'error');
+            }
+        }
+
+        function submitOfficerDecision(decision) {
+            const projects = getProjects();
+            const p = projects.find(item => item.id === selectedProjectId);
+            const remarks = document.getElementById('officer-remarks').value || 'No specific remarks.';
+
+            if (decision === 'rejected') {
+                p.status = 'rejected';
+                p.auditLog.push({
+                    stage: p.currentStage,
+                    user: currentUser.name,
+                    action: 'Proposal Rejected',
+                    remarks: remarks,
+                    date: new Date().toISOString().split('T')[0]
+                });
+                showToast('Proposal has been rejected.', 'error');
+            } else {
+                p.auditLog.push({
+                    stage: p.currentStage,
+                    user: currentUser.name,
+                    action: p.currentStage === 4 ? 'DS Final Approval Granted' : 'Approved & Forwarded',
+                    remarks: remarks,
+                    date: new Date().toISOString().split('T')[0]
+                });
+                p.currentStage = Math.min(5, p.currentStage + 1);
+                showToast('Decision saved successfully!', 'success');
+            }
+
+            saveProjects(projects);
+            closeReviewModal();
+            renderTable();
+        }
+
+        function generateApprovalCertificate() {
+            const projects = getProjects();
+            const p = projects.find(item => item.id === selectedProjectId);
+            if (!p) return;
+
+            document.getElementById('cert-ref-no').innerText = `DS/KND/NGO/2026/${p.id.replace('PROJ-', '')}`;
+            document.getElementById('cert-date').innerText = new Date().toISOString().split('T')[0];
+            document.getElementById('cert-ngo-name').innerText = p.ngo;
+            document.getElementById('cert-ngo-reg').innerText = p.ngoReg;
+            document.getElementById('cert-project-title').innerText = p.title;
+            document.getElementById('cert-ds-division').innerText = `${p.district || 'Kandy'} (${p.dsDivision})`;
+            document.getElementById('cert-budget').innerText = `LKR ${Number(p.budget).toLocaleString()}`;
+
+            const qrContainer = document.getElementById('qrcode');
+            qrContainer.innerHTML = '';
+            new QRCode(qrContainer, {
+                text: `VERIFIED-GRANT-${p.id}`,
+                width: 64,
+                height: 64
+            });
+
+            document.getElementById('printable-area').classList.remove('hidden');
+            window.print();
+            document.getElementById('printable-area').classList.add('hidden');
+        }
+
+        function printExecutiveReport() {
+            const allProjects = getProjects();
+            const projects = (currentUser.role === 'ngo_rep') 
+                ? allProjects.filter(p => p.ngo === currentUser.ngoName) 
+                : allProjects;
+
+            let summaryWindow = window.open('', '_blank');
+            summaryWindow.document.write(`
+                <html>
+                <head>
+                    <title>Executive Summary - NGO Projects</title>
+                    <style>
+                        body { font-family: Arial, sans-serif; padding: 20px; line-height: 1.5; }
+                        h2, h4 { color: #451a03; margin: 0; }
+                        table { width: 100%; border-collapse: collapse; margin-top: 20px; font-size: 12px; }
+                        th, td { border: 1px solid #ccc; padding: 8px; text-align: left; }
+                        th { background: #fef3c7; }
+                    </style>
+                </head>
+                <body>
+                    <h2>District Secretariat - Kandy</h2>
+                    <h4>Executive Summary Report - Registered NGO Projects</h4>
+                    <p style="font-size:11px;">Report Generated Date: ${new Date().toLocaleDateString()}</p>
+                    <hr>
+                    <table>
+                        <thead>
+                            <tr><th>Ref ID</th><th>Project Title</th><th>NGO Name</th><th>District & DS Division</th><th>Budget (LKR)</th><th>Status</th></tr>
+                        </thead>
+                        <tbody>
+                            ${projects.map(p => `
+                                <tr>
+                                    <td>${p.id}</td>
+                                    <td>${p.title}</td>
+                                    <td>${p.ngo}</td>
+                                    <td>${p.district || 'Kandy'} (${p.dsDivision})</td>
+                                    <td>LKR ${Number(p.budget).toLocaleString()}</td>
+                                    <td>Stage ${p.currentStage}/5 (${STAGES[p.currentStage].name})</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+                </body>
+                </html>
+            `);
+            summaryWindow.document.close();
+            summaryWindow.print();
+        }
+
+        // Admin Config Modal Handlers
+        function showAdminConfigModal() {
+            renderAdminDistrictOptions();
+            renderAdminDivisionsList();
+            document.getElementById('admin-config-modal').classList.remove('hidden');
+        }
+        function closeAdminConfigModal() { document.getElementById('admin-config-modal').classList.add('hidden'); }
+
+        function renderAdminDistrictOptions() {
+            const data = getDistrictsData();
+            const select = document.getElementById('admin-district-select');
+            select.innerHTML = '';
+            Object.keys(data).forEach(d => {
+                select.innerHTML += `<option value="${d}">${d}</option>`;
+            });
+        }
+
+        function renderAdminDivisionsList() {
+            const data = getDistrictsData();
+            const selDistrict = document.getElementById('admin-district-select').value;
+            const container = document.getElementById('admin-divisions-list');
+            container.innerHTML = '';
+            const divisions = data[selDistrict] || [];
+
+            divisions.forEach((div, index) => {
+                container.innerHTML += `
+                    <div class="flex justify-between items-center bg-white p-1.5 rounded border">
+                        <span>${div}</span>
+                        <button onclick="deleteDivision('${selDistrict}', ${index})" class="text-red-600 hover:text-red-800"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `;
+            });
+        }
+
+        function addDistrict() {
+            const name = document.getElementById('input-new-district').value.trim();
+            if (!name) return;
+            const data = getDistrictsData();
+            if (!data[name]) {
+                data[name] = [];
+                saveDistrictsData(data);
+                document.getElementById('input-new-district').value = '';
+                renderAdminDistrictOptions();
+                showToast(`District '${name}' added successfully!`, 'success');
+            }
+        }
+
+        function addDivision() {
+            const selDistrict = document.getElementById('admin-district-select').value;
+            const name = document.getElementById('input-new-division').value.trim();
+            if (!name) return;
+            const data = getDistrictsData();
+            if (data[selDistrict] && !data[selDistrict].includes(name)) {
+                data[selDistrict].push(name);
+                saveDistrictsData(data);
+                document.getElementById('input-new-division').value = '';
+                renderAdminDivisionsList();
+                showToast(`Division '${name}' added successfully!`, 'success');
+            }
+        }
+
+        function deleteDivision(district, index) {
+            const data = getDistrictsData();
+            if (data[district]) {
+                data[district].splice(index, 1);
+                saveDistrictsData(data);
+                renderAdminDivisionsList();
+                showToast('Division removed.', 'info');
+            }
+        }
+
+        function resetSystemData() {
+            if (confirm('Are you sure you want to reset the system database back to defaults?')) {
+                saveUsers(DEFAULT_ACCOUNTS);
+                saveProjects(INITIAL_PROJECTS);
+                saveDistrictsData(INITIAL_DISTRICTS_DATA);
+                renderTable();
+                showToast('System data reset to default state.', 'info');
+            }
+        }
+
+        function filterProjects() {
+            const q = document.getElementById('table-search').value.toLowerCase();
+            const rows = document.querySelectorAll('#projects-table-body tr');
+            rows.forEach(r => {
+                r.style.display = r.innerText.toLowerCase().includes(q) ? '' : 'none';
+            });
+        }
+
+        function showToast(msg, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            const bg = type === 'success' ? 'bg-emerald-800' : type === 'error' ? 'bg-red-800' : 'bg-amber-950';
+            toast.className = `${bg} text-white text-xs px-4 py-3 rounded-lg shadow-lg transition-all duration-300 transform translate-y-2 opacity-0 flex items-center gap-2`;
+            toast.innerHTML = `<i class="fa-solid fa-circle-info"></i> ${msg}`;
+            container.appendChild(toast);
+            
+            setTimeout(() => { toast.classList.remove('translate-y-2', 'opacity-0'); }, 50);
+            setTimeout(() => {
+                toast.classList.add('opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 3500);
+        }
+    </script>
+</body>
+</html>

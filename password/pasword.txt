@@ -1,0 +1,12 @@
+ප්‍රවේශ වීමට පෙරනිමි ගිණුම් (Default Production Logins):
+සංවර්ධක / පද්ධති පරිපාලක (Master Admin/Developer Access):
+
+ඊමේල්: admin@kandy.gov.lk | මුරපදය: admin123
+
+දිස්ත්‍රික් ලේකම් (DS Kandy):
+
+ඊමේල්: ds@kandy.gov.lk | මුරපදය: ds123
+
+NGO සම්බන්ධීකාරක (Coordinator):
+
+ඊමේල්: coordinator@kandy.gov.lk | මුරපදය: coord123

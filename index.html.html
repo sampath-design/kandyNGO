@@ -1,0 +1,2277 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NGO Portal - District Secretariat Kandy | Sri Lanka</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800&family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Sinhala:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        daladaMaroon: '#7A0016',    // Kandy Temple Crimson/Maroon
+                        daladaMaroonDark: '#52000E',
+                        daladaGold: '#D4AF37',      // Golden Roof Gold
+                        daladaGoldLight: '#F3E5AB',
+                        daladaGoldDark: '#997A15',
+                        daladaIvory: '#FFFDF5',     // Warm Ivory White
+                        daladaDark: '#1C1917'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans Sinhala', 'sans-serif'],
+                        royal: ['Cinzel', 'Noto Sans Sinhala', 'serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            font-family: 'Inter', 'Noto Sans Sinhala', sans-serif;
+            background-color: #FFFDF5;
+            color: #1C1917;
+        }
+        .royal-font {
+            font-family: 'Cinzel', 'Noto Sans Sinhala', serif;
+        }
+        .gold-border-glow {
+            border-bottom: 3px solid #D4AF37;
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.25);
+        }
+        .active-tab {
+            border-bottom: 3px solid #D4AF37;
+            color: #D4AF37 !important;
+            font-weight: 700;
+        }
+        .page-section {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.3s ease-in-out;
+        }
+        .page-section.active {
+            display: block;
+            opacity: 1;
+        }
+        .kandy-pattern-bar {
+            background: linear-gradient(90deg, #7A0016 0%, #D4AF37 50%, #7A0016 100%);
+            height: 4px;
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #FFFDF5;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #7A0016;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #52000E;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between antialiased">
+
+    <!-- Decorative Top Kandyan Gold & Crimson Line -->
+    <div class="kandy-pattern-bar"></div>
+
+    <!-- Government Top Utility Banner -->
+    <div class="bg-daladaMaroonDark text-amber-100 text-xs py-2 px-4 flex flex-wrap justify-between items-center border-b border-daladaGold/30 z-50">
+        <div class="flex items-center space-x-3">
+            <span class="bg-daladaGold text-daladaMaroonDark font-bold px-2 py-0.5 rounded text-[10px] uppercase tracking-wider shadow-sm">
+                Official Government Portal
+            </span>
+            <span class="hidden sm:inline text-amber-200/90 font-medium" data-en="District Secretariat - Kandy | Community Services Division" data-si="දිස්ත්‍රික් ලේකම් කාර්යාලය - මහනුවර | ප්‍රජා සේවා අංශය">
+                District Secretariat - Kandy | Community Services Division
+            </span>
+        </div>
+        
+        <div class="flex items-center space-x-4">
+            <!-- Admin Session Status Indicator & Button -->
+            <div id="admin-status-container" class="flex items-center space-x-2">
+                <span id="admin-badge" class="hidden bg-emerald-700 text-white text-[10px] px-2 py-0.5 rounded font-bold uppercase tracking-wider flex items-center space-x-1">
+                    <i class="fa-solid fa-shield-halved text-[9px]"></i>
+                    <span>Admin Active</span>
+                </span>
+                <button id="admin-action-btn" onclick="openAdminModal()" class="text-xs bg-daladaMaroon hover:bg-daladaMaroon/80 text-daladaGold px-2.5 py-1 rounded border border-daladaGold/40 transition flex items-center space-x-1">
+                    <i class="fa-solid fa-user-gear text-daladaGold"></i>
+                    <span id="admin-btn-text" data-en="Admin Portal" data-si="පාලක පුවරුව">Admin Portal</span>
+                </button>
+                <!-- Dedicated Quick Logout Button in Header -->
+                <button id="header-logout-btn" onclick="handleAdminLogout()" class="hidden text-xs bg-rose-800 hover:bg-rose-900 text-rose-100 px-2.5 py-1 rounded border border-rose-500 transition flex items-center space-x-1 font-semibold">
+                    <i class="fa-solid fa-right-from-bracket text-rose-300"></i>
+                    <span data-en="Log Out" data-si="ඉවත් වන්න">Log Out</span>
+                </button>
+            </div>
+
+            <!-- Language Selector -->
+            <div class="flex items-center space-x-1 border-l border-amber-200/20 pl-3">
+                <i class="fa-solid fa-globe text-daladaGold text-xs mr-1"></i>
+                <button onclick="setLanguage('en')" id="btn-en" class="px-2 py-0.5 rounded text-xs font-bold bg-daladaGold text-daladaMaroonDark transition">EN</button>
+                <button onclick="setLanguage('si')" id="btn-si" class="px-2 py-0.5 rounded text-xs font-bold text-amber-200 hover:bg-daladaMaroon transition">සිංහල</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Header & Navigation Bar -->
+    <header class="bg-daladaMaroon shadow-xl sticky top-0 z-40 text-white border-b border-daladaGold/40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-20">
+                <!-- Emblem & Portal Title -->
+                <div class="flex items-center space-x-3.5 cursor-pointer" onclick="navigateTo('home')">
+                    <div class="w-12 h-12 p-1.5 bg-gradient-to-br from-amber-200 via-daladaGold to-amber-600 rounded-full shadow-lg flex items-center justify-center shrink-0">
+                        <div class="w-full h-full bg-daladaMaroonDark rounded-full flex items-center justify-center border border-daladaGold">
+                            <i class="fa-solid fa-monument text-daladaGold text-lg"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h1 class="text-lg sm:text-2xl font-bold royal-font text-daladaGold tracking-wide leading-tight">
+                            NGO Portal - Kandy
+                        </h1>
+                        <p class="text-[10px] sm:text-[11px] text-amber-200/80 tracking-wider uppercase font-medium" data-en="District Secretariat & Community Unit" data-si="දිස්ත්‍රික් ලේකම් කාර්යාලය - මහනුවර">
+                            District Secretariat & Community Unit
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Desktop Navigation Items -->
+                <nav class="hidden xl:flex items-center space-x-1 text-xs font-medium text-amber-100">
+                    <button onclick="navigateTo('home')" id="nav-home" class="nav-link px-2.5 py-2 rounded hover:text-daladaGold hover:bg-daladaMaroonDark transition active-tab" data-en="Home" data-si="මුල් පිටුව">Home</button>
+                    <button onclick="navigateTo('circulars')" id="nav-circulars" class="nav-link px-2.5 py-2 rounded hover:text-daladaGold hover:bg-daladaMaroonDark transition" data-en="Circulars & Acts" data-si="චක්‍රලේඛ">Circulars & Acts</button>
+                    <button onclick="navigateTo('registration')" id="nav-registration" class="nav-link px-2.5 py-2 rounded hover:text-daladaGold hover:bg-daladaMaroonDark transition" data-en="Registration" data-si="ලියාපදිංචිය">Registration</button>
+                    <button onclick="navigateTo('directory')" id="nav-directory" class="nav-link px-2.5 py-2 rounded hover:text-daladaGold hover:bg-daladaMaroonDark transition" data-en="Directory" data-si="නාමාවලිය">Directory</button>
+                    <button onclick="navigateTo('services')" id="nav-services" class="nav-link px-2.5 py-2 rounded hover:text-daladaGold hover:bg-daladaMaroonDark transition" data-en="Services" data-si="සේවාවන්">Services</button>
+                    <button onclick="navigateTo('about')" id="nav-about" class="nav-link px-2.5 py-2 rounded hover:text-daladaGold hover:bg-daladaMaroonDark transition" data-en="About Us" data-si="අප ගැන">About Us</button>
+                    <button onclick="navigateTo('team')" id="nav-team" class="nav-link px-2.5 py-2 rounded hover:text-daladaGold hover:bg-daladaMaroonDark transition" data-en="Team" data-si="කණ්ඩායම">Team</button>
+                    <button onclick="navigateTo('projects')" id="nav-projects" class="nav-link px-2.5 py-2 rounded hover:text-daladaGold hover:bg-daladaMaroonDark transition" data-en="Projects" data-si="ව්‍යාපෘති">Projects</button>
+                    <button onclick="navigateTo('gallery')" id="nav-gallery" class="nav-link px-2.5 py-2 rounded hover:text-daladaGold hover:bg-daladaMaroonDark transition" data-en="Gallery" data-si="ඡායාරූප">Gallery</button>
+                    <button onclick="navigateTo('faq')" id="nav-faq" class="nav-link px-2.5 py-2 rounded hover:text-daladaGold hover:bg-daladaMaroonDark transition" data-en="FAQ" data-si="ප්‍රශ්න">FAQ</button>
+                </nav>
+
+                <!-- Mobile Menu Button -->
+                <div class="xl:hidden flex items-center">
+                    <button onclick="toggleMobileMenu()" class="p-2 rounded text-daladaGold hover:bg-daladaMaroonDark focus:outline-none">
+                        <i class="fa-solid fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Mobile Navigation Drawer -->
+        <div id="mobile-menu" class="hidden xl:hidden bg-daladaMaroonDark border-t border-daladaGold/30 px-4 py-3 space-y-2 shadow-2xl">
+            <button onclick="navigateTo('home')" class="block w-full text-left px-3 py-2 text-amber-100 hover:text-daladaGold hover:bg-daladaMaroon rounded text-sm" data-en="Home" data-si="මුල් පිටුව">Home</button>
+            <button onclick="navigateTo('circulars')" class="block w-full text-left px-3 py-2 text-amber-100 hover:text-daladaGold hover:bg-daladaMaroon rounded text-sm" data-en="Circulars & Acts" data-si="චක්‍රලේඛ සහ පනත්">Circulars & Acts</button>
+            <button onclick="navigateTo('registration')" class="block w-full text-left px-3 py-2 text-amber-100 hover:text-daladaGold hover:bg-daladaMaroon rounded text-sm" data-en="Registration" data-si="ලියාපදිංචිය">Registration</button>
+            <button onclick="navigateTo('directory')" class="block w-full text-left px-3 py-2 text-amber-100 hover:text-daladaGold hover:bg-daladaMaroon rounded text-sm" data-en="NGO Directory" data-si="ලියාපදිංචි සංවිධාන">NGO Directory</button>
+            <button onclick="navigateTo('services')" class="block w-full text-left px-3 py-2 text-amber-100 hover:text-daladaGold hover:bg-daladaMaroon rounded text-sm" data-en="Services" data-si="සේවාවන්">Services</button>
+            <button onclick="navigateTo('about')" class="block w-full text-left px-3 py-2 text-amber-100 hover:text-daladaGold hover:bg-daladaMaroon rounded text-sm" data-en="About Us & Contact" data-si="අප ගැන">About Us & Contact</button>
+            <button onclick="navigateTo('team')" class="block w-full text-left px-3 py-2 text-amber-100 hover:text-daladaGold hover:bg-daladaMaroon rounded text-sm" data-en="Team" data-si="කණ්ඩායම">Team</button>
+            <button onclick="navigateTo('projects')" class="block w-full text-left px-3 py-2 text-amber-100 hover:text-daladaGold hover:bg-daladaMaroon rounded text-sm" data-en="Projects" data-si="ව්‍යාපෘති">Projects</button>
+            <button onclick="navigateTo('gallery')" class="block w-full text-left px-3 py-2 text-amber-100 hover:text-daladaGold hover:bg-daladaMaroon rounded text-sm" data-en="Media Gallery" data-si="ඡායාරූප ගැලරිය">Media Gallery</button>
+            <button onclick="navigateTo('faq')" class="block w-full text-left px-3 py-2 text-amber-100 hover:text-daladaGold hover:bg-daladaMaroon rounded text-sm" data-en="FAQ" data-si="ප්‍රශ්න">FAQ</button>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="flex-grow">
+
+        <!-- ================= HOME SECTION ================= -->
+        <section id="sec-home" class="page-section active">
+            <!-- Hero Image Slider Section -->
+            <div class="relative w-full h-[380px] sm:h-[480px] lg:h-[520px] bg-slate-900 overflow-hidden shadow-2xl border-b-4 border-daladaGold">
+                <!-- Dynamic Slide Container -->
+                <div id="slider-container" class="w-full h-full relative">
+                    <!-- Dynamic Slide Content -->
+                </div>
+
+                <!-- Slider Navigation Controls -->
+                <button onclick="prevSlide()" class="absolute left-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-daladaMaroon/70 hover:bg-daladaMaroon text-daladaGold border border-daladaGold/50 backdrop-blur-sm flex items-center justify-center transition hover:scale-110 shadow-lg z-20">
+                    <i class="fa-solid fa-chevron-left text-lg"></i>
+                </button>
+                <button onclick="nextSlide()" class="absolute right-4 top-1/2 -translate-y-1/2 w-11 h-11 rounded-full bg-daladaMaroon/70 hover:bg-daladaMaroon text-daladaGold border border-daladaGold/50 backdrop-blur-sm flex items-center justify-center transition hover:scale-110 shadow-lg z-20">
+                    <i class="fa-solid fa-chevron-right text-lg"></i>
+                </button>
+
+                <!-- Slider Indicator Dots -->
+                <div id="slider-dots" class="absolute bottom-5 left-1/2 -translate-x-1/2 flex space-x-2.5 z-20"></div>
+
+                <!-- Admin Slider Quick Edit Pill -->
+                <button onclick="openAdminModal('slider')" class="admin-only hidden absolute top-4 right-4 bg-black/70 hover:bg-black/90 text-daladaGold text-xs px-3 py-1.5 rounded-full border border-daladaGold/60 backdrop-blur-md transition flex items-center space-x-1.5 z-20 shadow-lg">
+                    <i class="fa-solid fa-pen-to-square text-[#D4AF37]"></i>
+                    <span>Edit Slides</span>
+                </button>
+            </div>
+
+            <!-- Welcome & Vision / Mission -->
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+                <div class="text-center max-w-3xl mx-auto mb-12">
+                    <span class="inline-block px-3.5 py-1 bg-amber-100 text-daladaMaroon border border-daladaGold/40 text-xs font-bold rounded-full mb-3 uppercase tracking-wider"
+                          data-en="Central Province Social Synergy" data-si="මධ්‍යම පළාත් සමාජ ඒකාබද්ධතාව">
+                          Central Province Social Synergy
+                    </span>
+                    <h2 class="text-2xl sm:text-4xl font-extrabold text-daladaMaroon royal-font leading-tight mb-4"
+                        data-en="Fostering Transparent Community Governance in Kandy"
+                        data-si="මහනුවර දිස්ත්‍රික්කයේ පාරදෘශ්‍ය සමාජ සංවර්ධනය">
+                        Fostering Transparent Community Governance in Kandy
+                    </h2>
+                    <p class="text-slate-600 leading-relaxed text-sm sm:text-base"
+                       data-en="The District Secretariat NGO Portal serves as the unified digital hub for Non-Governmental Organizations (NGOs) and Community Based Organizations (CBOs) operating across all 20 Divisional Secretariat Divisions of Kandy."
+                       data-si="මහනුවර ප්‍රාදේශීය ලේකම් කොට්ඨාස 20 තුළ ක්‍රියාත්මක වන රාජ්‍ය නොවන සංවිධාන (NGO) සහ ප්‍රජාමූල සංවිධාන (CBO) එකමුතු කරමින් විනිවිදභාවයෙන් යුත් සේවාවක් ලබාදීම.">
+                       The District Secretariat NGO Portal serves as the unified digital hub for Non-Governmental Organizations (NGOs) and Community Based Organizations (CBOs) operating across all 20 Divisional Secretariat Divisions of Kandy.
+                    </p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Vision Card -->
+                    <div class="bg-white p-8 rounded-2xl border border-amber-200/60 shadow-lg hover:shadow-xl transition relative overflow-hidden">
+                        <div class="w-2 h-full bg-daladaGold absolute left-0 top-0"></div>
+                        <div class="w-12 h-12 bg-amber-100/80 rounded-xl flex items-center justify-center text-daladaMaroon text-xl mb-5 border border-daladaGold/30">
+                            <i class="fa-solid fa-eye"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-daladaMaroon royal-font mb-3" data-en="Our Vision" data-si="අපගේ දැක්ම">Our Vision</h3>
+                        <p class="text-slate-600 leading-relaxed text-sm"
+                           data-en="Empowering social service organizations to build a resilient, prosperous, and inclusive community under the cultural heritage and administrative excellence of Kandy."
+                           data-si="මහනුවර දිස්ත්‍රික්කය තුළ සමෘද්ධිමත්, විපතුල සහ සියලු දෙනා ඇතුළත් සමාජයක් නිර්මාණය කිරීම සඳහා සමාජ සේවා සංවිධාන සවිබල ගැන්වීම.">
+                           "Empowering social service organizations to build a resilient, prosperous, and inclusive community under the cultural heritage and administrative excellence of Kandy."
+                        </p>
+                    </div>
+
+                    <!-- Mission Card -->
+                    <div class="bg-white p-8 rounded-2xl border border-amber-200/60 shadow-lg hover:shadow-xl transition relative overflow-hidden">
+                        <div class="w-2 h-full bg-daladaMaroon absolute left-0 top-0"></div>
+                        <div class="w-12 h-12 bg-rose-100/80 rounded-xl flex items-center justify-center text-daladaMaroon text-xl mb-5 border border-daladaMaroon/30">
+                            <i class="fa-solid fa-bullseye"></i>
+                        </div>
+                        <h3 class="text-xl font-bold text-daladaMaroon royal-font mb-3" data-en="Our Mission" data-si="අපගේ මෙහෙවර">Our Mission</h3>
+                        <p class="text-slate-600 leading-relaxed text-sm"
+                           data-en="To integrate all civil society partners into an official digital management portal, ensuring equitable resource distribution, legal compliance, and disaster relief efficiency."
+                           data-si="සියලුම රාජ්‍ය නොවන සංවිධාන විනිවිදභාවයෙන් හා කාර්යක්ෂම ඩිජිටල් පද්ධතියක් තුළට ඒකාබද්ධ කරමින් දිස්ත්‍රික් සංවර්ධනය ශක්තිමත් කිරීම.">
+                           "To integrate all civil society partners into an official digital management portal, ensuring equitable resource distribution, legal compliance, and disaster relief efficiency."
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Dynamic Live Stats Counter -->
+                <div class="mt-12 bg-gradient-to-r from-daladaMaroonDark via-daladaMaroon to-daladaMaroonDark text-white rounded-2xl p-8 shadow-xl border border-daladaGold/40">
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
+                        <div class="p-3">
+                            <span id="stat-ngo-count" class="block text-3xl sm:text-4xl font-black text-daladaGold font-mono mb-1">+</span>
+                            <span class="text-xs sm:text-sm text-amber-200/80 font-medium" data-en="Registered NGOs" data-si="ලියාපදිංචි සංවිධාන">Registered NGOs</span>
+                        </div>
+                        <div class="p-3 border-l border-amber-200/20">
+                            <span class="block text-3xl sm:text-4xl font-black text-daladaGold font-mono mb-1">0</span>
+                            <span class="text-xs sm:text-sm text-amber-200/80 font-medium" data-en="Divisional Secretariats" data-si="ප්‍රාදේශීය ලේකම් කොට්ඨාස">Divisional Secretariats</span>
+                        </div>
+                        <div class="p-3 border-l border-amber-200/20">
+                            <span class="block text-3xl sm:text-4xl font-black text-daladaGold font-mono mb-1">0+</span>
+                            <span class="text-xs sm:text-sm text-amber-200/80 font-medium" data-en="Community Projects" data-si="සමාජ ව්‍යාපෘති">Community Projects</span>
+                        </div>
+                        <div class="p-3 border-l border-amber-200/20">
+                            <span class="block text-3xl sm:text-4xl font-black text-daladaGold font-mono mb-1">0+</span>
+                            <span class="text-xs sm:text-sm text-amber-200/80 font-medium" data-en="Beneficiaries Reached" data-si="ප්‍රතිලාභීන් සංඛ්‍යාව">Beneficiaries Reached</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= CIRCULARS & ACTS ================= -->
+        <section id="sec-circulars" class="page-section">
+            <div class="bg-gradient-to-r from-daladaMaroon to-daladaMaroonDark text-white py-10 border-b-4 border-daladaGold">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+                    <div>
+                        <h2 class="text-2xl sm:text-3xl font-bold royal-font text-daladaGold" data-en="Circulars, Legislation & Acts" data-si="චක්‍රලේඛ සහ පනත්">Circulars, Legislation & Acts</h2>
+                        <p class="text-sm text-amber-200/90 mt-1" data-en="Official legal frameworks, Gazette notifications, and guidelines governing Voluntary Social Service Organizations." data-si="ස්වේච්ඡා සමාජ සේවා සංවිධාන සඳහා අදාළ වන ප්‍රධාන නීතිමය පනත් සහ චක්‍රලේඛ.">Official legal frameworks, Gazette notifications, and guidelines governing Voluntary Social Service Organizations.</p>
+                    </div>
+                    <button onclick="openAdminModal('circular')" class="admin-only hidden bg-daladaGold text-daladaMaroonDark font-bold text-xs px-3.5 py-2 rounded-lg hover:bg-amber-300 transition flex items-center space-x-1.5 shadow">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Add Circular</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div id="circulars-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                    <!-- Dynamically rendered circulars -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= REGISTRATION SECTION ================= -->
+        <section id="sec-registration" class="page-section">
+            <div class="bg-gradient-to-r from-daladaMaroon to-daladaMaroonDark text-white py-10 border-b-4 border-daladaGold">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <h2 class="text-2xl sm:text-3xl font-bold royal-font text-daladaGold" data-en="NGO & CBO Registration Portal" data-si="ලියාපදිංචි කිරීමේ පෝරමය">NGO & CBO Registration Portal</h2>
+                    <p class="text-sm text-amber-200/90 mt-1" data-en="District Secretariat, Kandy - Official Multi-Step Registration System" data-si="මහනුවර දිස්ත්‍රික් ලේකම් කාර්යාලය - ස්වේච්ඡා සමාජ සේවා සංවිධාන දත්ත පද්ධතිය">
+                        District Secretariat, Kandy - Official Multi-Step Registration System
+                    </p>
+                </div>
+            </div>
+
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+                <!-- Step Progress Bar (1 to 6) -->
+                <div class="mb-8">
+                    <div class="flex justify-between items-center text-xs font-bold text-slate-600 mb-2">
+                        <span id="step-indicator-text" class="text-daladaMaroon royal-font text-sm">Section 1 of 6: Basic Details</span>
+                        <span id="step-percentage" class="text-daladaGoldDark">16% Completed</span>
+                    </div>
+                    <div class="w-full bg-slate-200 h-3 rounded-full overflow-hidden border border-amber-300">
+                        <div id="step-progress-bar" class="bg-gradient-to-r from-daladaMaroon to-daladaGold h-full w-[16.66%] transition-all duration-300"></div>
+                    </div>
+                    <!-- Step Pills Navigation -->
+                    <div class="grid grid-cols-6 gap-1 sm:gap-2 mt-3 text-center text-[10px] sm:text-xs font-semibold">
+                        <button onclick="goToFormStep(1)" id="step-pill-1" class="py-1.5 px-1 rounded bg-daladaMaroon text-daladaGold font-bold shadow">1. Basic</button>
+                        <button onclick="goToFormStep(2)" id="step-pill-2" class="py-1.5 px-1 rounded bg-amber-100 text-slate-600 hover:bg-amber-200">2. Contact</button>
+                        <button onclick="goToFormStep(3)" id="step-pill-3" class="py-1.5 px-1 rounded bg-amber-100 text-slate-600 hover:bg-amber-200">3. Region</button>
+                        <button onclick="goToFormStep(4)" id="step-pill-4" class="py-1.5 px-1 rounded bg-amber-100 text-slate-600 hover:bg-amber-200">4. Sectors</button>
+                        <button onclick="goToFormStep(5)" id="step-pill-5" class="py-1.5 px-1 rounded bg-amber-100 text-slate-600 hover:bg-amber-200">5. Governance</button>
+                        <button onclick="goToFormStep(6)" id="step-pill-6" class="py-1.5 px-1 rounded bg-amber-100 text-slate-600 hover:bg-amber-200">6. Submit</button>
+                    </div>
+                </div>
+
+                <!-- Registration Form Card -->
+                <div class="bg-white p-6 sm:p-8 rounded-2xl border border-amber-200 shadow-xl relative">
+                    <form id="registration-form" onsubmit="submitRegistration(event)">
+                        
+                        <!-- SECTION 1: Basic Details -->
+                        <div id="form-step-1" class="form-step-content space-y-5">
+                            <div class="border-b border-amber-200 pb-3">
+                                <span class="bg-daladaMaroon text-daladaGold text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Section 1 of 6</span>
+                                <h3 class="text-lg font-bold text-daladaMaroon mt-2 royal-font">General Organization Information</h3>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Organization Name (Full Legal Name) *</label>
+                                <input type="text" id="reg-name" required placeholder="e.g. Kandy Community Upliftment Society" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-daladaGold outline-none">
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Registration Number (VSSO/Govt)</label>
+                                    <input type="text" id="reg-num" placeholder="e.g. FL-123456 / VSSO-KND-09" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-daladaGold outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Year Established *</label>
+                                    <input type="number" id="reg-year" min="1800" max="2026" required placeholder="e.g. 2012" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-daladaGold outline-none">
+                                </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-700 mb-2">Organization Type *</label>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-sm text-slate-700">
+                                    <label class="flex items-center space-x-2 bg-slate-50 p-2.5 rounded border border-slate-200 cursor-pointer hover:bg-amber-50">
+                                        <input type="radio" name="org_type" value="CBO" checked class="text-daladaMaroon focus:ring-daladaGold">
+                                        <span>Community Based Org (CBO)</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 bg-slate-50 p-2.5 rounded border border-slate-200 cursor-pointer hover:bg-amber-50">
+                                        <input type="radio" name="org_type" value="District NGO" class="text-daladaMaroon focus:ring-daladaGold">
+                                        <span>District Level NGO</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 bg-slate-50 p-2.5 rounded border border-slate-200 cursor-pointer hover:bg-amber-50">
+                                        <input type="radio" name="org_type" value="National NGO" class="text-daladaMaroon focus:ring-daladaGold">
+                                        <span>National NGO</span>
+                                    </label>
+                                    <label class="flex items-center space-x-2 bg-slate-50 p-2.5 rounded border border-slate-200 cursor-pointer hover:bg-amber-50">
+                                        <input type="radio" name="org_type" value="INGO" class="text-daladaMaroon focus:ring-daladaGold">
+                                        <span>International NGO (INGO)</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SECTION 2: Contact Details -->
+                        <div id="form-step-2" class="form-step-content space-y-5 hidden">
+                            <div class="border-b border-amber-200 pb-3">
+                                <span class="bg-daladaMaroon text-daladaGold text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Section 2 of 6</span>
+                                <h3 class="text-lg font-bold text-daladaMaroon mt-2 royal-font">Contact Details & Physical Address</h3>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Official Address in Kandy *</label>
+                                <textarea id="reg-address" required rows="2" placeholder="No. 124, Peradeniya Road, Kandy" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-daladaGold outline-none"></textarea>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Official Email Address *</label>
+                                    <input type="email" id="reg-email" required placeholder="info@kandyngo.org" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-daladaGold outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Phone Number *</label>
+                                    <input type="tel" id="reg-phone" required placeholder="+94 81 234 5678" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-daladaGold outline-none">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SECTION 3: Divisional Secretariat Region -->
+                        <div id="form-step-3" class="form-step-content space-y-5 hidden">
+                            <div class="border-b border-amber-200 pb-3">
+                                <span class="bg-daladaMaroon text-daladaGold text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Section 3 of 6</span>
+                                <h3 class="text-lg font-bold text-daladaMaroon mt-2 royal-font">Divisional Secretariat Operations</h3>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Primary Divisional Secretariat Division (Kandy) *</label>
+                                <select id="reg-ds" required class="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-daladaGold outline-none bg-white">
+                                    <option value="">Select DS Division...</option>
+                                    <option value="Kandy Four Gravets & Gangawata Korale">Kandy Four Gravets & Gangawata Korale</option>
+                                    <option value="Kundasale">Kundasale</option>
+                                    <option value="Udunuwara">Udunuwara</option>
+                                    <option value="Yatinuwara">Yatinuwara</option>
+                                    <option value="Harispattuwa">Harispattuwa</option>
+                                    <option value="Pathadumbara">Pathadumbara</option>
+                                    <option value="Panvila">Panvila</option>
+                                    <option value="Poojapitiya">Poojapitiya</option>
+                                    <option value="Akurana">Akurana</option>
+                                    <option value="Hataraliyadda">Hataraliyadda</option>
+                                    <option value="Udapalatha">Udapalatha</option>
+                                    <option value="Ganga Ihala Korale">Ganga Ihala Korale</option>
+                                    <option value="Pasbage Korale">Pasbage Korale</option>
+                                    <option value="Dumbara">Ududumbara</option>
+                                    <option value="Medadumbara">Medadumbara</option>
+                                    <option value="Minipe">Minipe</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <!-- SECTION 4: Sectors -->
+                        <div id="form-step-4" class="form-step-content space-y-5 hidden">
+                            <div class="border-b border-amber-200 pb-3">
+                                <span class="bg-daladaMaroon text-daladaGold text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Section 4 of 6</span>
+                                <h3 class="text-lg font-bold text-daladaMaroon mt-2 royal-font">Key Operating Sectors</h3>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Primary Operational Focus *</label>
+                                <input type="text" id="reg-sector" required placeholder="e.g. Education, Environment, Microfinance" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-daladaGold outline-none">
+                            </div>
+                        </div>
+
+                        <!-- SECTION 5: Governance -->
+                        <div id="form-step-5" class="form-step-content space-y-5 hidden">
+                            <div class="border-b border-amber-200 pb-3">
+                                <span class="bg-daladaMaroon text-daladaGold text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Section 5 of 6</span>
+                                <h3 class="text-lg font-bold text-daladaMaroon mt-2 royal-font">Governance & Office Bearers</h3>
+                            </div>
+
+                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Head of Organization / President Name *</label>
+                                    <input type="text" id="reg-head" required placeholder="Full Name" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-daladaGold outline-none">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Secretary / Key Contact Person *</label>
+                                    <input type="text" id="reg-secretary" required placeholder="Full Name" class="w-full px-3.5 py-2.5 border border-slate-300 rounded-lg text-sm focus:ring-2 focus:ring-daladaGold outline-none">
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- SECTION 6: Review & Submit -->
+                        <div id="form-step-6" class="form-step-content space-y-5 hidden">
+                            <div class="border-b border-amber-200 pb-3">
+                                <span class="bg-daladaMaroon text-daladaGold text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">Section 6 of 6</span>
+                                <h3 class="text-lg font-bold text-daladaMaroon mt-2 royal-font">Declaration & Submission</h3>
+                            </div>
+
+                            <div class="p-4 bg-amber-50 rounded-xl border border-amber-200 text-xs text-slate-700 leading-relaxed">
+                                <p class="font-bold text-daladaMaroon mb-1">Official Declaration:</p>
+                                I hereby certify that the information provided above is accurate and true to the best of my knowledge and complies with the Voluntary Social Service Organizations Act of Sri Lanka.
+                            </div>
+
+                            <button type="submit" class="w-full py-3 bg-daladaMaroon text-daladaGold font-bold text-sm rounded-lg hover:bg-daladaMaroonDark transition shadow-lg flex items-center justify-center space-x-2">
+                                <i class="fa-solid fa-paper-plane"></i>
+                                <span>Submit Registration Application</span>
+                            </button>
+                        </div>
+
+                        <!-- Form Navigation Buttons -->
+                        <div class="mt-8 flex justify-between items-center border-t border-slate-100 pt-4">
+                            <button type="button" id="prev-step-btn" onclick="prevFormStep()" class="hidden px-4 py-2 border border-slate-300 text-slate-700 font-semibold text-xs rounded-lg hover:bg-slate-100 transition">
+                                <i class="fa-solid fa-arrow-left mr-1"></i> Previous
+                            </button>
+                            <button type="button" id="next-step-btn" onclick="nextFormStep()" class="px-6 py-2.5 bg-daladaMaroon text-daladaGold font-bold text-xs rounded-lg hover:bg-daladaMaroonDark transition shadow flex items-center space-x-1.5 ml-auto">
+                                <span>Next Step</span>
+                                <i class="fa-solid fa-arrow-right"></i>
+                            </button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= DIRECTORY SECTION ================= -->
+        <section id="sec-directory" class="page-section">
+            <div class="bg-gradient-to-r from-daladaMaroon to-daladaMaroonDark text-white py-10 border-b-4 border-daladaGold">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <h2 class="text-2xl sm:text-3xl font-bold royal-font text-daladaGold" data-en="Registered NGO Directory" data-si="ලියාපදිංචි සංවිධාන නාමාවලිය">Registered NGO Directory</h2>
+                    <p class="text-sm text-amber-200/90 mt-1">Verified Non-Governmental Organizations operating in Kandy District.</p>
+                </div>
+            </div>
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+                <!-- Search & Filter Controls -->
+                <div class="bg-white p-4 rounded-xl border border-amber-200 shadow mb-8 flex flex-wrap gap-4 items-center justify-between">
+                    <div class="flex-1 min-w-[240px]">
+                        <div class="relative">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+                            <input type="text" id="dir-search" oninput="filterDirectory()" placeholder="Search NGO by name, division, sector..." class="w-full pl-10 pr-4 py-2 border border-slate-300 rounded-lg text-xs focus:ring-2 focus:ring-daladaGold outline-none">
+                        </div>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <select id="dir-filter-ds" onchange="filterDirectory()" class="p-2 border border-slate-300 rounded-lg text-xs bg-white font-medium text-slate-700 outline-none">
+                            <option value="">All DS Divisions</option>
+                            <option value="Kandy Four Gravets">Kandy Four Gravets</option>
+                            <option value="Kundasale">Kundasale</option>
+                            <option value="Udunuwara">Udunuwara</option>
+                            <option value="Yatinuwara">Yatinuwara</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Directory Grid -->
+                <div id="directory-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Dynamic NGO cards -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= SERVICES SECTION ================= -->
+        <section id="sec-services" class="page-section">
+            <div class="bg-gradient-to-r from-daladaMaroon to-daladaMaroonDark text-white py-10 border-b-4 border-daladaGold">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+                    <div>
+                        <h2 class="text-2xl sm:text-3xl font-bold royal-font text-daladaGold" data-en="Public Services & Approvals" data-si="සේවාවන්">Public Services & Approvals</h2>
+                        <p class="text-sm text-amber-200/90 mt-1">Facilitating NGO compliance, event clearances, and disaster coordination.</p>
+                    </div>
+                    <button onclick="openAdminModal('sub-services')" class="admin-only hidden bg-daladaGold text-daladaMaroonDark font-bold text-xs px-3.5 py-2 rounded-lg hover:bg-amber-300 transition flex items-center space-x-1.5 shadow">
+                        <i class="fa-solid fa-plus"></i>
+                        <span>Add Service</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div id="services-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Dynamic Services -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= ABOUT US SECTION ================= -->
+        <section id="sec-about" class="page-section">
+            <div class="bg-gradient-to-r from-daladaMaroon to-daladaMaroonDark text-white py-10 border-b-4 border-daladaGold">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+                    <div>
+                        <h2 id="about-header-title" class="text-2xl sm:text-3xl font-bold royal-font text-daladaGold">ABOUT NGO UNIT</h2>
+                        <p id="about-header-sub" class="text-sm text-amber-200/90 mt-1">District Secretariat - Kandy, Sri Lanka</p>
+                    </div>
+                    <button onclick="openAdminModal('sub-about')" class="admin-only hidden bg-daladaGold text-daladaMaroonDark font-bold text-xs px-3.5 py-2 rounded-lg hover:bg-amber-300 transition flex items-center space-x-1.5 shadow">
+                        <i class="fa-solid fa-pen-to-square"></i>
+                        <span>Edit About Us</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div class="bg-white rounded-2xl border border-amber-200/80 shadow-xl p-6 sm:p-10 grid grid-cols-1 lg:grid-cols-2 gap-8 items-center">
+                    <div>
+                        <h3 id="about-card-title" class="text-xl sm:text-2xl font-bold text-daladaMaroon royal-font mb-4">ADMINISTRATIVE COORDINATION DESK</h3>
+                        <p id="about-card-desc" class="text-slate-600 leading-relaxed text-sm mb-6">
+                            The NGO Unit at the Kandy District Secretariat functions directly under the guidance of the District Secretary / Government Agent. We oversee the registration, monitoring, and empowerment of civil society groups to ensure social projects directly benefit the residents of the Central Province.
+                        </p>
+                        <div class="space-y-3 text-xs font-semibold text-slate-700">
+                            <div class="flex items-center space-x-3">
+                                <i class="fa-solid fa-location-dot text-daladaMaroon text-base"></i>
+                                <span id="about-card-addr">District Secretariat, Kandy, Sri Lanka</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <i class="fa-solid fa-phone text-daladaMaroon text-base"></i>
+                                <span id="about-card-phone">+94 81 222 2223 / +94 81 223 4280</span>
+                            </div>
+                            <div class="flex items-center space-x-3">
+                                <i class="fa-solid fa-envelope text-daladaMaroon text-base"></i>
+                                <span id="about-card-email">ngounit@kandy.dist.gov.lk</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="h-72 sm:h-80 rounded-xl overflow-hidden border border-amber-300 shadow">
+                        <img id="about-card-img" src="https://images.unsplash.com/photo-1588598198321-9735fd52455b?auto=format&fit=crop&w=800&q=80" class="w-full h-full object-cover">
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= TEAM SECTION ================= -->
+        <section id="sec-team" class="page-section">
+            <div class="bg-gradient-to-r from-daladaMaroon to-daladaMaroonDark text-white py-10 border-b-4 border-daladaGold">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+                    <div>
+                        <h2 class="text-2xl sm:text-3xl font-bold royal-font text-daladaGold" data-en="Secretariat Leadership & NGO Officers" data-si="කණ්ඩායම">Secretariat Leadership & NGO Officers</h2>
+                        <p class="text-sm text-amber-200/90 mt-1">Dedicated officials coordinating community development in Kandy District.</p>
+                    </div>
+                    <button onclick="openAdminModal('sub-team')" class="admin-only hidden bg-daladaGold text-daladaMaroonDark font-bold text-xs px-3.5 py-2 rounded-lg hover:bg-amber-300 transition flex items-center space-x-1.5 shadow">
+                        <i class="fa-solid fa-user-plus"></i>
+                        <span>Add Member</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div id="team-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Team member cards rendered dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= PROJECTS SECTION ================= -->
+        <section id="sec-projects" class="page-section">
+            <div class="bg-gradient-to-r from-daladaMaroon to-daladaMaroonDark text-white py-10 border-b-4 border-daladaGold">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+                    <div>
+                        <h2 class="text-2xl sm:text-3xl font-bold royal-font text-daladaGold" data-en="Ongoing & Approved Community Projects" data-si="ව්‍යාපෘති">Ongoing & Approved Community Projects</h2>
+                        <p class="text-sm text-amber-200/90 mt-1">Impact initiatives approved and executed across Kandy Divisional Secretariats.</p>
+                    </div>
+                    <div class="flex items-center space-x-2">
+                        <a href="project.html" target="_blank" class="bg-amber-100 text-daladaMaroon font-bold text-xs px-3.5 py-2 rounded-lg hover:bg-amber-200 transition flex items-center space-x-1.5 shadow">
+                            <i class="fa-solid fa-file-signature text-daladaMaroon"></i>
+                            <span>Apply for Project Approval</span>
+                        </a>
+                        <button onclick="openAdminModal('sub-projects')" class="admin-only hidden bg-daladaGold text-daladaMaroonDark font-bold text-xs px-3 py-2 rounded-lg hover:bg-amber-300 transition flex items-center space-x-1 shadow">
+                            <i class="fa-solid fa-plus"></i>
+                            <span>Add Project</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <!-- Projects Rendered Dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= GALLERY SECTION ================= -->
+        <section id="sec-gallery" class="page-section">
+            <div class="bg-gradient-to-r from-daladaMaroon to-daladaMaroonDark text-white py-10 border-b-4 border-daladaGold">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between items-center">
+                    <div>
+                        <h2 class="text-2xl sm:text-3xl font-bold royal-font text-daladaGold" data-en="Media Gallery & Video Events" data-si="ඡායාරූප සහ වීඩියෝ">Media Gallery & Video Events</h2>
+                        <p class="text-sm text-amber-200/90 mt-1">Highlights and YouTube video events from District NGO conferences, workshops and field inspections.</p>
+                    </div>
+                    <button onclick="openAdminModal('sub-gallery')" class="admin-only hidden bg-daladaGold text-daladaMaroonDark font-bold text-xs px-3.5 py-2 rounded-lg hover:bg-amber-300 transition flex items-center space-x-1.5 shadow">
+                        <i class="fa-solid fa-photo-film"></i>
+                        <span>Manage Gallery</span>
+                    </button>
+                </div>
+            </div>
+
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+                <div id="gallery-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                    <!-- Media Gallery items (Photos & YouTube Videos) rendered dynamically -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ================= FAQ SECTION ================= -->
+        <section id="sec-faq" class="page-section">
+            <div class="bg-gradient-to-r from-daladaMaroon to-daladaMaroonDark text-white py-10 border-b-4 border-daladaGold">
+                <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <h2 class="text-2xl sm:text-3xl font-bold royal-font text-daladaGold" data-en="Frequently Asked Questions" data-si="ප්‍රශ්න සහ පිළිතුරු">Frequently Asked Questions</h2>
+                    <p class="text-sm text-amber-200/90 mt-1">Guidance regarding NGO registration, renewal fees, and district approvals.</p>
+                </div>
+            </div>
+
+            <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-4">
+                <div class="bg-white p-6 rounded-xl border border-amber-200 shadow">
+                    <h3 class="font-bold text-daladaMaroon text-base mb-2">How long does the NGO registration process take?</h3>
+                    <p class="text-xs text-slate-600 leading-relaxed">Verification by the Divisional Secretariat and police security clearance typically takes 2 to 4 weeks upon submitting all required documentation.</p>
+                </div>
+                <div class="bg-white p-6 rounded-xl border border-amber-200 shadow">
+                    <h3 class="font-bold text-daladaMaroon text-base mb-2">Is annual renewal mandatory for Community Based Organizations?</h3>
+                    <p class="text-xs text-slate-600 leading-relaxed">Yes. Under Voluntary Social Services Act guidelines, annual progress reports and audited financial accounts must be submitted by March 31st each year.</p>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-daladaMaroonDark text-amber-100 border-t-4 border-daladaGold py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs space-y-3">
+            <div class="flex justify-center items-center space-x-2">
+                <i class="fa-solid fa-monument text-daladaGold"></i>
+                <span class="font-bold royal-font text-daladaGold text-sm">District Secretariat - Kandy</span>
+            </div>
+            <p class="text-amber-200/70">Official Voluntary Social Services Management & NGO Coordination Unit.</p>
+            <p class="text-amber-200/40 text-[10px]">&copy; 2026 District Secretariat Kandy. All Rights Reserved.</p>
+        </div>
+    </footer>
+
+    <!-- ================= ADMIN MANAGEMENT MODAL ================= -->
+    <div id="admin-modal" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="bg-white w-full max-w-4xl rounded-2xl shadow-2xl border-2 border-daladaGold overflow-hidden flex flex-col max-h-[90vh]">
+            
+            <!-- Modal Header -->
+            <div class="bg-daladaMaroon text-white p-4 flex justify-between items-center border-b border-daladaGold/40">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-sliders text-daladaGold text-lg"></i>
+                    <h3 class="font-bold royal-font text-daladaGold text-base">Portal Admin Management</h3>
+                </div>
+                <button onclick="closeAdminModal()" class="text-amber-200 hover:text-white text-xl">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <!-- Modal Content Body -->
+            <div class="p-6 overflow-y-auto flex-grow space-y-6">
+                
+                <!-- LOGIN FORM (Shown when not authenticated) -->
+                <div id="admin-login-view" class="max-w-md mx-auto py-8">
+                    <div class="text-center mb-6">
+                        <div class="w-14 h-14 bg-amber-100 rounded-full flex items-center justify-center mx-auto mb-3 text-daladaMaroon border border-daladaGold">
+                            <i class="fa-solid fa-lock text-xl"></i>
+                        </div>
+                        <h4 class="font-bold text-lg text-daladaMaroon royal-font">Administrative Login</h4>
+                        <p class="text-xs text-slate-500">Sign in to access NGO approvals and portal settings.</p>
+                    </div>
+                    <form onsubmit="handleAdminLogin(event)" class="space-y-4">
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Username</label>
+                            <input type="text" id="admin-user" required placeholder="" class="w-full p-2.5 border rounded-lg text-xs outline-none focus:ring-2 focus:ring-daladaGold">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-bold uppercase text-slate-700 mb-1">Password</label>
+                            <input type="password" id="admin-pass" required placeholder="••••••••" class="w-full p-2.5 border rounded-lg text-xs outline-none focus:ring-2 focus:ring-daladaGold">
+                        </div>
+                        <button type="submit" class="w-full py-2.5 bg-daladaMaroon text-daladaGold font-bold text-xs rounded-lg hover:bg-daladaMaroonDark transition shadow">
+                            Sign In to Portal Admin
+                        </button>
+                        <p class="text-[10px] text-slate-400 text-center">Demo Admin Login: username: <strong class="text-slate-600">SBDDF</strong> | password: <strong class="text-slate-600">sampath0765588622</strong></p>
+                    </form>
+                </div>
+
+                <!-- DASHBOARD VIEW (Shown when authenticated) -->
+                <div id="admin-dashboard-view" class="hidden space-y-6">
+                    
+                    <!-- Admin Sub-tab Navigation Bar -->
+                    <div class="flex border-b border-slate-200 text-xs font-bold overflow-x-auto">
+                        <button onclick="switchAdminTab('sub-slider')" id="atab-sub-slider" class="flex-1 py-3 px-3 text-center text-daladaMaroon border-b-2 border-daladaGold flex items-center justify-center space-x-1 whitespace-nowrap">
+                            <i class="fa-solid fa-images"></i>
+                            <span>Slide Manager</span>
+                        </button>
+                        <button onclick="switchAdminTab('sub-circular')" id="atab-sub-circular" class="flex-1 py-3 px-3 text-center text-slate-600 hover:text-daladaMaroon flex items-center justify-center space-x-1 whitespace-nowrap">
+                            <i class="fa-solid fa-file-pdf"></i>
+                            <span>Circulars & Acts</span>
+                        </button>
+                        <button onclick="switchAdminTab('sub-team')" id="atab-sub-team" class="flex-1 py-3 px-3 text-center text-slate-600 hover:text-daladaMaroon flex items-center justify-center space-x-1 whitespace-nowrap">
+                            <i class="fa-solid fa-users-gear"></i>
+                            <span>Team Manager</span>
+                        </button>
+                        <button onclick="switchAdminTab('sub-about')" id="atab-sub-about" class="flex-1 py-3 px-3 text-center text-slate-600 hover:text-daladaMaroon flex items-center justify-center space-x-1 whitespace-nowrap">
+                            <i class="fa-solid fa-circle-info"></i>
+                            <span>About Us</span>
+                        </button>
+                        <button onclick="switchAdminTab('sub-services')" id="atab-sub-services" class="flex-1 py-3 px-3 text-center text-slate-600 hover:text-daladaMaroon flex items-center justify-center space-x-1 whitespace-nowrap">
+                            <i class="fa-solid fa-concierge-bell"></i>
+                            <span>Services</span>
+                        </button>
+                        <button onclick="switchAdminTab('sub-projects')" id="atab-sub-projects" class="flex-1 py-3 px-3 text-center text-slate-600 hover:text-daladaMaroon flex items-center justify-center space-x-1 whitespace-nowrap">
+                            <i class="fa-solid fa-diagram-project"></i>
+                            <span>Projects Manager</span>
+                        </button>
+                        <button onclick="switchAdminTab('sub-gallery')" id="atab-sub-gallery" class="flex-1 py-3 px-3 text-center text-slate-600 hover:text-daladaMaroon flex items-center justify-center space-x-1 whitespace-nowrap">
+                            <i class="fa-solid fa-photo-film"></i>
+                            <span>Gallery & Videos</span>
+                        </button>
+                        <button onclick="switchAdminTab('sub-requests')" id="atab-sub-requests" class="flex-1 py-3 px-3 text-center text-slate-600 hover:text-daladaMaroon flex items-center justify-center space-x-1 whitespace-nowrap">
+                            <i class="fa-solid fa-file-export"></i>
+                            <span>Submissions & Exports</span>
+                        </button>
+                    </div>
+
+                    <!-- SUB-TAB 1: Slide Manager -->
+                    <div id="sub-slider" class="admin-subview space-y-4">
+                        <div class="bg-amber-50/50 p-4 rounded-xl border border-amber-200">
+                            <h4 class="font-bold text-daladaMaroon text-sm mb-3">Add New Slide Image</h4>
+                            <form onsubmit="addNewSlide(event)" class="space-y-3 text-xs">
+                                <input type="text" id="add-slide-title" placeholder="Slide Title (e.g. Kandy Tooth Relic Festival)" required class="w-full p-2.5 border rounded-lg outline-none">
+                                <input type="text" id="add-slide-sub" placeholder="Slide Subtitle / Caption" required class="w-full p-2.5 border rounded-lg outline-none">
+                                <input type="url" id="add-slide-url" placeholder="Image URL (https://...)" required class="w-full p-2.5 border rounded-lg outline-none">
+                                <button type="submit" class="w-full py-2.5 bg-daladaMaroon text-daladaGold font-bold rounded-lg hover:bg-daladaMaroonDark transition shadow">
+                                    + Add Slide
+                                </button>
+                            </form>
+                        </div>
+                        <div class="space-y-2">
+                            <h4 class="font-bold text-daladaMaroon text-xs uppercase tracking-wider">Current Active Slides</h4>
+                            <div id="admin-slide-list" class="space-y-2 text-xs"></div>
+                        </div>
+                    </div>
+
+                    <!-- SUB-TAB 2: Circulars & Acts Manager -->
+                    <div id="sub-circular" class="admin-subview space-y-4 hidden">
+                        <div class="bg-amber-50/50 p-4 rounded-xl border border-amber-200">
+                            <h4 class="font-bold text-daladaMaroon text-sm mb-3">Add New Circular or Act PDF</h4>
+                            <form onsubmit="addNewCircular(event)" class="space-y-3 text-xs">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <input type="text" id="add-circ-act" placeholder="Act / Circular No (e.g. Act No. 31 of 1980)" required class="p-2.5 border rounded-lg outline-none">
+                                    <input type="text" id="add-circ-title" placeholder="Title (e.g. Voluntary Social Services Act)" required class="p-2.5 border rounded-lg outline-none">
+                                </div>
+                                <textarea id="add-circ-desc" rows="2" placeholder="Brief summary description..." required class="w-full p-2.5 border rounded-lg outline-none"></textarea>
+                                
+                                <div class="space-y-1.5">
+                                    <label class="block font-bold text-slate-700">PDF Document Source (Upload File OR Enter PDF Link)</label>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                        <input type="file" id="add-circ-file" accept="application/pdf" onchange="handlePdfFileUpload(event)" class="p-2 border rounded-lg bg-white text-slate-600 w-full text-xs">
+                                        <input type="url" id="add-circ-url" placeholder="Direct PDF Link (https://...)" class="p-2.5 border rounded-lg outline-none w-full">
+                                    </div>
+                                </div>
+                                <div class="flex space-x-2">
+                                    <button type="submit" class="flex-1 py-2.5 bg-daladaMaroon text-daladaGold font-bold rounded-lg hover:bg-daladaMaroonDark transition shadow flex items-center justify-center space-x-1.5">
+                                        <i class="fa-solid fa-file-circle-plus"></i>
+                                        <span>Save & Publish Circular</span>
+                                    </button>
+                                    <button type="button" onclick="downloadCurrentFormPdf()" class="py-2.5 px-4 bg-emerald-700 text-white font-bold rounded-lg hover:bg-emerald-800 transition shadow flex items-center justify-center space-x-1.5 shrink-0">
+                                        <i class="fa-solid fa-download"></i>
+                                        <span>Save & Download PDF</span>
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                        <div class="space-y-2">
+                            <h4 class="font-bold text-daladaMaroon text-xs uppercase tracking-wider">Published Circulars & Gazette Links</h4>
+                            <div id="admin-circulars-list" class="space-y-2 text-xs"></div>
+                        </div>
+                    </div>
+
+                    <!-- SUB-TAB: Team Customizer -->
+                    <div id="sub-team" class="admin-subview space-y-4 hidden">
+                        <div class="bg-amber-50/50 p-4 rounded-xl border border-amber-200">
+                            <h4 class="font-bold text-daladaMaroon text-sm mb-3">Add Team Member</h4>
+                            <form onsubmit="addNewTeamMember(event)" class="space-y-3 text-xs">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <input type="text" id="add-team-name" placeholder="Full Name (e.g. Mrs. Chandana Wickramasinghe)" required class="p-2.5 border rounded-lg outline-none">
+                                    <input type="text" id="add-team-title" placeholder="Designation (e.g. District Secretary / GA Kandy)" required class="p-2.5 border rounded-lg outline-none">
+                                </div>
+                                <input type="text" id="add-team-role" placeholder="Role Description (e.g. Head of Administration)" required class="w-full p-2.5 border rounded-lg outline-none">
+                                
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                    <input type="email" id="add-team-email" placeholder="Email Address (Optional)" class="p-2.5 border rounded-lg outline-none">
+                                    <input type="tel" id="add-team-phone" placeholder="Contact Phone No (Optional)" class="p-2.5 border rounded-lg outline-none">
+                                    <input type="tel" id="add-team-whatsapp" placeholder="WhatsApp No (e.g. 94771234567)" class="p-2.5 border rounded-lg outline-none">
+                                </div>
+
+                                <div class="space-y-1.5">
+                                    <label class="block font-bold text-slate-700">Member Photo (Upload File OR Image URL)</label>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                        <input type="file" id="add-team-file" accept="image/*" onchange="handleTeamPhotoUpload(event)" class="p-2 border rounded-lg bg-white text-slate-600 w-full text-xs">
+                                        <input type="url" id="add-team-photo" placeholder="Photo URL (https://...)" class="p-2.5 border rounded-lg outline-none w-full">
+                                    </div>
+                                </div>
+                                <button type="submit" class="w-full py-2.5 bg-daladaMaroon text-daladaGold font-bold rounded-lg hover:bg-daladaMaroonDark transition shadow flex items-center justify-center space-x-1.5">
+                                    <i class="fa-solid fa-user-plus"></i>
+                                    <span>Add Team Member</span>
+                                </button>
+                            </form>
+                        </div>
+                        <div class="space-y-2">
+                            <h4 class="font-bold text-daladaMaroon text-xs uppercase tracking-wider">Current Active Team Members</h4>
+                            <div id="admin-team-list" class="space-y-2 text-xs"></div>
+                        </div>
+                    </div>
+
+                    <!-- SUB-TAB: About Us Customizer -->
+                    <div id="sub-about" class="admin-subview space-y-4 hidden">
+                        <div class="bg-amber-50/50 p-4 rounded-xl border border-amber-200">
+                            <h4 class="font-bold text-daladaMaroon text-sm mb-3">Customize About Us Page Content</h4>
+                            <form onsubmit="saveAboutUsContent(event)" class="space-y-3 text-xs">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <input type="text" id="edit-about-header" placeholder="Header Title" required class="p-2.5 border rounded-lg outline-none">
+                                    <input type="text" id="edit-about-sub" placeholder="Header Subtitle" required class="p-2.5 border rounded-lg outline-none">
+                                </div>
+                                <input type="text" id="edit-about-title" placeholder="Card Title" required class="w-full p-2.5 border rounded-lg outline-none">
+                                <textarea id="edit-about-desc" rows="3" placeholder="Full Description..." required class="w-full p-2.5 border rounded-lg outline-none"></textarea>
+                                
+                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                    <input type="text" id="edit-about-addr" placeholder="Address" required class="p-2.5 border rounded-lg outline-none">
+                                    <input type="text" id="edit-about-phone" placeholder="Phone Numbers" required class="p-2.5 border rounded-lg outline-none">
+                                    <input type="email" id="edit-about-email" placeholder="Email" required class="p-2.5 border rounded-lg outline-none">
+                                </div>
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">Featured Image URL</label>
+                                    <input type="url" id="edit-about-img" placeholder="https://..." required class="w-full p-2.5 border rounded-lg outline-none">
+                                </div>
+                                <button type="submit" class="w-full py-2.5 bg-daladaMaroon text-daladaGold font-bold rounded-lg hover:bg-daladaMaroonDark transition shadow flex items-center justify-center space-x-1.5">
+                                    <i class="fa-solid fa-floppy-disk"></i>
+                                    <span>Save About Us Settings</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- SUB-TAB: Services Manager -->
+                    <div id="sub-services" class="admin-subview space-y-4 hidden">
+                        <div class="bg-amber-50/50 p-4 rounded-xl border border-amber-200">
+                            <h4 class="font-bold text-daladaMaroon text-sm mb-3">Add Public Service Card</h4>
+                            <form onsubmit="addNewService(event)" class="space-y-3 text-xs">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <input type="text" id="add-serv-title" placeholder="Service Title *" required class="p-2.5 border rounded-lg outline-none">
+                                    <input type="text" id="add-serv-icon" placeholder="FontAwesome Icon (e.g. fa-stamp)" required class="p-2.5 border rounded-lg outline-none">
+                                </div>
+                                <textarea id="add-serv-desc" rows="2" placeholder="Service Description..." required class="w-full p-2.5 border rounded-lg outline-none"></textarea>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <input type="text" id="add-serv-btn" placeholder="Button Label (e.g. Apply Now)" required class="p-2.5 border rounded-lg outline-none">
+                                    <select id="add-serv-link" required class="p-2.5 border rounded-lg outline-none bg-white font-semibold">
+                                        <option value="registration">Go to Registration Section</option>
+                                        <option value="about">Go to About Us Section</option>
+                                        <option value="circulars">Go to Circulars Section</option>
+                                    </select>
+                                </div>
+                                <button type="submit" class="w-full py-2.5 bg-daladaMaroon text-daladaGold font-bold rounded-lg hover:bg-daladaMaroonDark transition shadow flex items-center justify-center space-x-1.5">
+                                    <i class="fa-solid fa-plus"></i>
+                                    <span>Add Service</span>
+                                </button>
+                            </form>
+                        </div>
+                        <div class="space-y-2">
+                            <h4 class="font-bold text-daladaMaroon text-xs uppercase tracking-wider">Active Public Services</h4>
+                            <div id="admin-services-list" class="space-y-2 text-xs"></div>
+                        </div>
+                    </div>
+
+                    <!-- SUB-TAB: Projects Manager -->
+                    <div id="sub-projects" class="admin-subview space-y-4 hidden">
+                        <div class="bg-amber-50/50 p-4 rounded-xl border border-amber-200">
+                            <h4 class="font-bold text-daladaMaroon text-sm mb-3">Add Approved / Ongoing Community Project</h4>
+                            <form onsubmit="addNewProject(event)" class="space-y-3 text-xs">
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    <input type="text" id="add-proj-title" placeholder="Project Title *" required class="p-2.5 border rounded-lg outline-none">
+                                    <input type="text" id="add-proj-ds" placeholder="Division / Location (e.g. Kundasale & Udunuwara)" required class="p-2.5 border rounded-lg outline-none">
+                                </div>
+                                <textarea id="add-proj-desc" rows="2" placeholder="Brief project description & objectives..." required class="w-full p-2.5 border rounded-lg outline-none"></textarea>
+                                
+                                <div class="space-y-1.5">
+                                    <label class="block font-bold text-slate-700">Project Image (Upload File OR Image URL)</label>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                        <input type="file" id="add-proj-file" accept="image/*" onchange="handleProjectPhotoUpload(event)" class="p-2 border rounded-lg bg-white text-slate-600 w-full text-xs">
+                                        <input type="url" id="add-proj-img" placeholder="Image URL (e.g. https://...)" class="p-2.5 border rounded-lg outline-none w-full">
+                                    </div>
+                                </div>
+                                <button type="submit" class="w-full py-2.5 bg-daladaMaroon text-daladaGold font-bold rounded-lg hover:bg-daladaMaroonDark transition shadow flex items-center justify-center space-x-1.5">
+                                    <i class="fa-solid fa-folder-plus"></i>
+                                    <span>Add Approved Project</span>
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="space-y-2">
+                            <h4 class="font-bold text-daladaMaroon text-xs uppercase tracking-wider">Active Approved Projects</h4>
+                            <div id="admin-projects-list" class="space-y-2 text-xs max-h-48 overflow-y-auto">
+                                <!-- Rendered dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SUB-TAB: Gallery Customizer (Photos & YouTube Videos) -->
+                    <div id="sub-gallery" class="admin-subview space-y-4 hidden">
+                        <div class="bg-amber-50/50 p-4 rounded-xl border border-amber-200">
+                            <h4 class="font-bold text-daladaMaroon text-sm mb-3">Add Gallery Photo or YouTube Video</h4>
+                            <form onsubmit="addNewGalleryItem(event)" class="space-y-3 text-xs">
+                                <div>
+                                    <label class="block font-bold text-slate-700 mb-1">Item Type</label>
+                                    <select id="add-gal-type" onchange="toggleGalleryTypeInputs()" class="w-full p-2.5 border rounded-lg outline-none bg-white font-semibold">
+                                        <option value="photo">Photo (Image File / Photo Link)</option>
+                                        <option value="video">YouTube Video URL / Embed Link</option>
+                                    </select>
+                                </div>
+                                <input type="text" id="add-gal-title" placeholder="Event / Media Caption Title (Optional)" class="w-full p-2.5 border rounded-lg outline-none">
+                                
+                                <div id="gal-photo-inputs" class="space-y-1.5">
+                                    <label class="block font-bold text-slate-700">Photo Source (Upload File OR Photo URL)</label>
+                                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                                        <input type="file" id="add-gal-file" accept="image/*" onchange="handleGalleryPhotoUpload(event)" class="p-2 border rounded-lg bg-white text-slate-600 w-full text-xs">
+                                        <input type="url" id="add-gal-img" placeholder="Photo URL (https://...)" class="p-2.5 border rounded-lg outline-none w-full">
+                                    </div>
+                                </div>
+
+                                <div id="gal-video-inputs" class="space-y-1.5 hidden">
+                                    <label class="block font-bold text-slate-700">YouTube Video URL / Embed Code</label>
+                                    <input type="text" id="add-gal-yt" placeholder="e.g. https://www.youtube.com/watch?v=dQw4w9WgXcQ" class="w-full p-2.5 border rounded-lg outline-none">
+                                </div>
+
+                                <button type="submit" class="w-full py-2.5 bg-daladaMaroon text-daladaGold font-bold rounded-lg hover:bg-daladaMaroonDark transition shadow flex items-center justify-center space-x-1.5">
+                                    <i class="fa-solid fa-plus"></i>
+                                    <span>Add to Media Gallery</span>
+                                </button>
+                            </form>
+                        </div>
+
+                        <div class="space-y-2">
+                            <h4 class="font-bold text-daladaMaroon text-xs uppercase tracking-wider">Current Media Gallery Items</h4>
+                            <div id="admin-gallery-list" class="space-y-2 text-xs max-h-48 overflow-y-auto">
+                                <!-- Rendered dynamically -->
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- SUB-TAB 3: Form Submissions & Data Exports -->
+                    <div id="sub-requests" class="admin-subview space-y-4 hidden">
+                        <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-200 pb-3">
+                            <div>
+                                <h4 class="font-bold text-daladaMaroon text-sm">NGO Registration Submissions</h4>
+                                <p class="text-[11px] text-slate-500">Approve registrations or export submitted data.</p>
+                            </div>
+                            <div class="flex items-center space-x-2">
+                                <button onclick="exportToExcel()" class="bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs px-3 py-1.5 rounded flex items-center space-x-1 shadow">
+                                    <i class="fa-solid fa-file-excel"></i>
+                                    <span>Export Excel (.CSV)</span>
+                                </button>
+                                <button onclick="exportToPDF()" class="bg-rose-700 hover:bg-rose-800 text-white font-bold text-xs px-3 py-1.5 rounded flex items-center space-x-1 shadow">
+                                    <i class="fa-solid fa-file-pdf"></i>
+                                    <span>Print PDF</span>
+                                </button>
+                                <button onclick="exportToGoogleSheets()" class="bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs px-3 py-1.5 rounded flex items-center space-x-1 shadow">
+                                    <i class="fa-solid fa-table"></i>
+                                    <span>Google Sheets Sync</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div id="admin-submissions-list" class="space-y-3 max-h-80 overflow-y-auto">
+                            <!-- Pending submissions rendered dynamically -->
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Modal Footer -->
+            <div id="admin-modal-footer" class="bg-slate-50 p-4 border-t border-slate-200 flex justify-between items-center hidden">
+                <button onclick="handleAdminLogout()" class="px-3.5 py-1.5 bg-rose-700 hover:bg-rose-800 text-white font-bold text-xs rounded transition flex items-center space-x-1.5">
+                    <i class="fa-solid fa-right-from-bracket"></i>
+                    <span>Log Out</span>
+                </button>
+                <button onclick="closeAdminModal()" class="px-4 py-1.5 border border-slate-300 text-slate-700 font-semibold text-xs rounded hover:bg-slate-100 transition">
+                    Close Dashboard
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Notification Toast Container -->
+    <div id="toast" class="fixed bottom-5 right-5 bg-daladaMaroon text-daladaGold text-xs font-bold px-4 py-3 rounded-lg shadow-2xl border border-daladaGold/50 transition-all duration-300 transform translate-y-20 opacity-0 z-50 flex items-center space-x-2">
+        <i class="fa-solid fa-circle-check text-base text-daladaGold"></i>
+        <span id="toast-msg">Action completed successfully!</span>
+    </div>
+
+    <!-- JavaScript Data Management Engine -->
+    <script>
+        // Initial Default Datasets
+        const defaultSlides = [
+            { id: 1, title: "ශ්‍රී දළදා මාළිගාව - මහනුවර", sub: "District Secretariat NGO Unit & Community Synergy", url: "https://images.unsplash.com/photo-1588598198321-9735fd52455b?auto=format&fit=crop&w=1200&q=80" },
+            { id: 2, title: "Kandy Lake & Heritage City", sub: "Empowering 20 Divisional Secretariats of Kandy", url: "https://images.unsplash.com/photo-1546708973-b339540b5162?auto=format&fit=crop&w=1200&q=80" }
+        ];
+
+        const defaultTeam = [
+            {
+                id: 1,
+                name: "Mrs. Chandana Wickramasinghe",
+                title: "District Secretary / GA Kandy",
+                role: "Patron & Head of Administration",
+                email: "ga@kandy.dist.gov.lk",
+                phone: "+94 81 222 2223",
+                whatsapp: "94812222223",
+                photo: "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80"
+            },
+            {
+                id: 2,
+                name: "Mr. Sampath Bandara",
+                title: "Director - NGO Unit",
+                role: "Coordinator for VSSO Registration",
+                email: "director.ngo@kandy.dist.gov.lk",
+                phone: "+94 81 223 4280",
+                whatsapp: "94812234280",
+                photo: "https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=400&q=80"
+            },
+            {
+                id: 3,
+                name: "Ms. Neshani Herath",
+                title: "Assistant District NGO Coordinator",
+                role: "Field Audits & Compliance Officer",
+                email: "audit.ngo@kandy.dist.gov.lk",
+                phone: "+94 81 223 4281",
+                whatsapp: "94812234281",
+                photo: "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=400&q=80"
+            }
+        ];
+
+        const defaultAbout = {
+            headerTitle: "ABOUT NGO UNIT",
+            headerSub: "District Secretariat - Kandy, Sri Lanka",
+            cardTitle: "ADMINISTRATIVE COORDINATION DESK",
+            cardDesc: "The NGO Unit at the Kandy District Secretariat functions directly under the guidance of the District Secretary / Government Agent. We oversee the registration, monitoring, and empowerment of civil society groups to ensure social projects directly benefit the residents of the Central Province.",
+            cardAddr: "District Secretariat, Kandy, Sri Lanka",
+            cardPhone: "+94 81 222 2223 / +94 81 223 4280",
+            cardEmail: "ngounit@kandy.dist.gov.lk",
+            cardImg: "https://images.unsplash.com/photo-1588598198321-9735fd52455b?auto=format&fit=crop&w=800&q=80"
+        };
+
+        const defaultServices = [
+            { id: 1, icon: "fa-stamp", title: "Annual Compliance Renewal", desc: "Submission of audited financial statements, AGM minutes, and project summaries for annual extension.", btnText: "Apply / Submit", link: "registration" },
+            { id: 2, icon: "fa-hands-holding-child", title: "Disaster Relief Clearance", desc: "Fast-track clearance for NGOs distributing relief supplies during landslide or flood emergencies in Kandy.", btnText: "Contact Coordinator", link: "about" },
+            { id: 3, icon: "fa-award", title: "Project Recommendation Letter", desc: "Official recommendation letters issued by District Secretary for international grant proposals.", btnText: "Request Desk", link: "about" }
+        ];
+
+        const defaultProjects = [
+            {
+                id: 1,
+                title: "Clean Drinking Water Scheme",
+                ds: "Udunuwara & Kundasale",
+                desc: "Installation of reverse osmosis water purification plants in rural schools and community centers.",
+                image: "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 2,
+                title: "Estate Youth IT Empowerment",
+                ds: "Panvila & Pathadumbara",
+                desc: "Setting up computer laboratories and vocational IT training centers for plantation community youth.",
+                image: "https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=600&q=80"
+            },
+            {
+                id: 3,
+                title: "Hanthana & Knuckles Reforestation",
+                ds: "Knuckles Buffer Zone",
+                desc: "Community-led endemic tree planting, catchment area protection, and eco-tourism promotion.",
+                image: "https://images.unsplash.com/photo-1542601906990-b4d3fb778b09?auto=format&fit=crop&w=600&q=80"
+            }
+        ];
+
+        const defaultGallery = [
+            { id: 1, type: "photo", title: "Annual NGO Conference", src: "https://images.unsplash.com/photo-1531206715517-5c0ba140b2b8?auto=format&fit=crop&w=600&q=80" },
+            { id: 2, type: "photo", title: "Community Workshop", src: "https://images.unsplash.com/photo-1577896851231-70ef18881754?auto=format&fit=crop&w=600&q=80" },
+            { id: 3, type: "photo", title: "Field Audit & Inspection", src: "https://images.unsplash.com/photo-1559027615-cd4628902d4a?auto=format&fit=crop&w=600&q=80" },
+            { id: 4, type: "photo", title: "Disaster Relief Distribution", src: "https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?auto=format&fit=crop&w=600&q=80" }
+        ];
+
+        const defaultNgos = [
+            { id: 1, name: "Kandy Child Development Foundation", reg: "VSSO-KND-01", type: "District NGO", ds: "Kandy Four Gravets", sector: "Childcare & Education", head: "Rev. K. Dhammika" },
+            { id: 2, name: "Kundasale Rural Water & Sanitation", reg: "VSSO-KND-08", type: "CBO", ds: "Kundasale", sector: "Water & Infrastructure", head: "Mr. B. M. Ranasinghe" },
+            { id: 3, name: "Central Environmental Heritage Protection", reg: "FL-98124", type: "National NGO", ds: "Udunuwara", sector: "Environment & Forestry", head: "Dr. S. Herath" }
+        ];
+
+        const defaultCirculars = [
+            { id: 1, act: "Act No. 31 of 1980", title: "Voluntary Social Services Organizations Act", desc: "Mandatory registration and regulatory framework for NGOs in Sri Lanka.", pdfUrl: "https://www.wcd.gov.lk/images/pdf/act/act_31_1980_e.pdf" },
+            { id: 2, act: "Act No. 08 of 1998", title: "VSSO Amendment Act", desc: "Amendments regarding financial oversight, audits, and governance.", pdfUrl: "https://www.wcd.gov.lk/images/pdf/act/act_8_1998_e.pdf" }
+        ];
+
+        // Application State Storage
+        let slides = JSON.parse(localStorage.getItem('kandy_ngo_slides')) || defaultSlides;
+        let team = JSON.parse(localStorage.getItem('kandy_ngo_team')) || defaultTeam;
+        let aboutData = JSON.parse(localStorage.getItem('kandy_ngo_about')) || defaultAbout;
+        let services = JSON.parse(localStorage.getItem('kandy_ngo_services')) || defaultServices;
+        let projects = JSON.parse(localStorage.getItem('kandy_ngo_projects')) || defaultProjects;
+        let gallery = JSON.parse(localStorage.getItem('kandy_ngo_gallery')) || defaultGallery;
+        let ngos = JSON.parse(localStorage.getItem('kandy_ngo_directory')) || defaultNgos;
+        let circulars = JSON.parse(localStorage.getItem('kandy_ngo_circulars')) || defaultCirculars;
+        let submissions = JSON.parse(localStorage.getItem('kandy_ngo_submissions')) || [];
+        let isAdminLoggedIn = localStorage.getItem('kandy_admin_active') === 'true';
+        let uploadedPdfBase64 = '';
+        let uploadedTeamPhotoBase64 = '';
+        let uploadedProjectPhotoBase64 = '';
+        let uploadedGalleryPhotoBase64 = '';
+
+        let currentSlideIndex = 0;
+        let currentFormStep = 1;
+        let slideInterval = null;
+        let currentLang = 'en';
+
+        // Initialize Application on Load
+        window.onload = function() {
+            renderSlides();
+            startSlideShow();
+            renderTeam();
+            renderAboutSection();
+            renderDirectory();
+            renderCirculars();
+            renderServices();
+            renderProjects();
+            renderGallery();
+            renderAdminSlideList();
+            renderAdminTeamList();
+            renderAdminCircularsList();
+            renderAdminServicesList();
+            renderAdminProjectsList();
+            renderAdminGalleryList();
+            updateAdminUIState();
+        };
+
+        // Hero Slider Engine
+        function renderSlides() {
+            const container = document.getElementById('slider-container');
+            const dots = document.getElementById('slider-dots');
+            if (!container) return;
+
+            container.innerHTML = '';
+            dots.innerHTML = '';
+
+            slides.forEach((slide, idx) => {
+                const slideDiv = document.createElement('div');
+                slideDiv.className = `absolute inset-0 transition-opacity duration-1000 ${idx === currentSlideIndex ? 'opacity-100 z-10' : 'opacity-0 z-0'}`;
+                slideDiv.innerHTML = `
+                    <img src="${slide.url}" class="w-full h-full object-cover">
+                    <div class="absolute inset-0 bg-gradient-to-t from-daladaMaroonDark via-daladaMaroon/40 to-transparent"></div>
+                    <div class="absolute bottom-12 left-6 sm:left-12 max-w-2xl text-white z-20">
+                        <h2 class="text-2xl sm:text-4xl font-extrabold royal-font text-daladaGold drop-shadow-md mb-2">${slide.title}</h2>
+                        <p class="text-xs sm:text-sm text-amber-100/90 font-medium tracking-wide drop-shadow">${slide.sub}</p>
+                    </div>
+                `;
+                container.appendChild(slideDiv);
+
+                const dot = document.createElement('button');
+                dot.className = `w-3 h-3 rounded-full transition-all ${idx === currentSlideIndex ? 'bg-daladaGold w-8' : 'bg-white/50 hover:bg-white'}`;
+                dot.onclick = () => goToSlide(idx);
+                dots.appendChild(dot);
+            });
+        }
+
+        function nextSlide() {
+            currentSlideIndex = (currentSlideIndex + 1) % slides.length;
+            renderSlides();
+        }
+
+        function prevSlide() {
+            currentSlideIndex = (currentSlideIndex - 1 + slides.length) % slides.length;
+            renderSlides();
+        }
+
+        function goToSlide(idx) {
+            currentSlideIndex = idx;
+            renderSlides();
+        }
+
+        function startSlideShow() {
+            if (slideInterval) clearInterval(slideInterval);
+            slideInterval = setInterval(nextSlide, 5000);
+        }
+
+        // Section Navigation
+        function navigateTo(sectionId) {
+            const sections = document.querySelectorAll('.page-section');
+            sections.forEach(sec => sec.classList.remove('active'));
+
+            const target = document.getElementById(`sec-${sectionId}`);
+            if (target) target.classList.add('active');
+
+            const navLinks = document.querySelectorAll('.nav-link');
+            navLinks.forEach(link => link.classList.remove('active-tab'));
+
+            const activeBtn = document.getElementById(`nav-${sectionId}`);
+            if (activeBtn) activeBtn.classList.add('active-tab');
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenu) mobileMenu.classList.add('hidden');
+        }
+
+        function toggleMobileMenu() {
+            const mobileMenu = document.getElementById('mobile-menu');
+            if (mobileMenu) mobileMenu.classList.toggle('hidden');
+        }
+
+        // Language Switching Engine
+        function setLanguage(lang) {
+            currentLang = lang;
+            document.querySelectorAll('[data-en]').forEach(el => {
+                if (lang === 'si' && el.getAttribute('data-si')) {
+                    el.innerText = el.getAttribute('data-si');
+                } else {
+                    el.innerText = el.getAttribute('data-en');
+                }
+            });
+
+            document.getElementById('btn-en').className = lang === 'en' 
+                ? 'px-2 py-0.5 rounded text-xs font-bold bg-daladaGold text-daladaMaroonDark transition'
+                : 'px-2 py-0.5 rounded text-xs font-bold text-amber-200 hover:bg-daladaMaroon transition';
+                
+            document.getElementById('btn-si').className = lang === 'si' 
+                ? 'px-2 py-0.5 rounded text-xs font-bold bg-daladaGold text-daladaMaroonDark transition'
+                : 'px-2 py-0.5 rounded text-xs font-bold text-amber-200 hover:bg-daladaMaroon transition';
+        }
+
+        // Multi-Step Registration Form Controller
+        function goToFormStep(step) {
+            if (step < 1 || step > 6) return;
+            currentFormStep = step;
+
+            for (let i = 1; i <= 6; i++) {
+                const stepContent = document.getElementById(`form-step-${i}`);
+                const pill = document.getElementById(`step-pill-${i}`);
+                if (stepContent) {
+                    if (i === step) {
+                        stepContent.classList.remove('hidden');
+                    } else {
+                        stepContent.classList.add('hidden');
+                    }
+                }
+                if (pill) {
+                    if (i === step) {
+                        pill.className = "py-1.5 px-1 rounded bg-daladaMaroon text-daladaGold font-bold shadow";
+                    } else {
+                        pill.className = "py-1.5 px-1 rounded bg-amber-100 text-slate-600 hover:bg-amber-200";
+                    }
+                }
+            }
+
+            const stepPercentage = Math.round((step / 6) * 100);
+            document.getElementById('step-progress-bar').style.width = `${stepPercentage}%`;
+            document.getElementById('step-percentage').innerText = `${stepPercentage}% Completed`;
+            
+            const titles = [
+                "Section 1 of 6: General Information",
+                "Section 2 of 6: Contact & Address",
+                "Section 3 of 6: Divisional Secretariat",
+                "Section 4 of 6: Operating Sectors",
+                "Section 5 of 6: Governance & Bearers",
+                "Section 6 of 6: Declaration & Submission"
+            ];
+            document.getElementById('step-indicator-text').innerText = titles[step - 1];
+
+            const prevBtn = document.getElementById('prev-step-btn');
+            const nextBtn = document.getElementById('next-step-btn');
+
+            if (prevBtn) {
+                if (step === 1) prevBtn.classList.add('hidden');
+                else prevBtn.classList.remove('hidden');
+            }
+
+            if (nextBtn) {
+                if (step === 6) nextBtn.classList.add('hidden');
+                else nextBtn.classList.remove('hidden');
+            }
+        }
+
+        function nextFormStep() {
+            goToFormStep(currentFormStep + 1);
+        }
+
+        function prevFormStep() {
+            goToFormStep(currentFormStep - 1);
+        }
+
+        function submitRegistration(e) {
+            e.preventDefault();
+            const newSubmission = {
+                id: Date.now(),
+                name: document.getElementById('reg-name').value,
+                regNum: document.getElementById('reg-num').value || 'Pending',
+                year: document.getElementById('reg-year').value,
+                type: document.querySelector('input[name="org_type"]:checked').value,
+                address: document.getElementById('reg-address').value,
+                email: document.getElementById('reg-email').value,
+                phone: document.getElementById('reg-phone').value,
+                ds: document.getElementById('reg-ds').value,
+                sector: document.getElementById('reg-sector').value,
+                head: document.getElementById('reg-head').value,
+                secretary: document.getElementById('reg-secretary').value,
+                dateSubmitted: new Date().toLocaleDateString()
+            };
+
+            submissions.unshift(newSubmission);
+            localStorage.setItem('kandy_ngo_submissions', JSON.stringify(submissions));
+            showToast("Registration Application submitted for Approval!");
+            document.getElementById('registration-form').reset();
+            goToFormStep(1);
+        }
+
+        // Directory Render & Search
+        function renderDirectory() {
+            const grid = document.getElementById('directory-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+
+            const countEl = document.getElementById('stat-ngo-count');
+            if (countEl) countEl.innerText = `${ngos.length + 125}+`;
+
+            ngos.forEach(ngo => {
+                const card = document.createElement('div');
+                card.className = "bg-white p-6 rounded-2xl border border-amber-200/80 shadow-md hover:shadow-xl transition flex flex-col justify-between";
+                card.innerHTML = `
+                    <div>
+                        <div class="flex justify-between items-start mb-3">
+                            <span class="bg-amber-100 text-daladaMaroon text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">${ngo.type}</span>
+                            <span class="text-[11px] font-mono font-bold text-slate-400">${ngo.reg}</span>
+                        </div>
+                        <h3 class="font-bold text-daladaMaroon text-base mb-2 leading-tight">${ngo.name}</h3>
+                        <div class="space-y-1.5 text-xs text-slate-600 mb-4">
+                            <p><i class="fa-solid fa-map-pin text-daladaGold mr-1.5"></i><strong>DS Division:</strong> ${ngo.ds}</p>
+                            <p><i class="fa-solid fa-layer-group text-daladaGold mr-1.5"></i><strong>Sector:</strong> ${ngo.sector}</p>
+                            <p><i class="fa-solid fa-user-tie text-daladaGold mr-1.5"></i><strong>Head:</strong> ${ngo.head}</p>
+                        </div>
+                    </div>
+                    <div class="border-t border-slate-100 pt-3 flex justify-between items-center text-xs">
+                        <span class="text-emerald-700 font-bold flex items-center"><i class="fa-solid fa-circle-check mr-1 text-[10px]"></i> Active Status</span>
+                        <button onclick="showToast('NGO Contact: ${ngo.head}')" class="text-daladaMaroon font-bold hover:underline">View Contact</button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function filterDirectory() {
+            const query = document.getElementById('dir-search').value.toLowerCase();
+            const dsFilter = document.getElementById('dir-filter-ds').value;
+
+            const filtered = ngos.filter(ngo => {
+                const matchesQuery = ngo.name.toLowerCase().includes(query) || 
+                                     ngo.sector.toLowerCase().includes(query) || 
+                                     ngo.head.toLowerCase().includes(query);
+                const matchesDs = !dsFilter || ngo.ds === dsFilter;
+                return matchesQuery && matchesDs;
+            });
+
+            const grid = document.getElementById('directory-grid');
+            grid.innerHTML = '';
+            filtered.forEach(ngo => {
+                const card = document.createElement('div');
+                card.className = "bg-white p-6 rounded-2xl border border-amber-200/80 shadow-md flex flex-col justify-between";
+                card.innerHTML = `
+                    <div>
+                        <div class="flex justify-between items-start mb-3">
+                            <span class="bg-amber-100 text-daladaMaroon text-[10px] font-bold px-2.5 py-1 rounded-full uppercase">${ngo.type}</span>
+                            <span class="text-[11px] font-mono font-bold text-slate-400">${ngo.reg}</span>
+                        </div>
+                        <h3 class="font-bold text-daladaMaroon text-base mb-2 leading-tight">${ngo.name}</h3>
+                        <div class="space-y-1.5 text-xs text-slate-600 mb-4">
+                            <p><i class="fa-solid fa-map-pin text-daladaGold mr-1.5"></i><strong>DS Division:</strong> ${ngo.ds}</p>
+                            <p><i class="fa-solid fa-layer-group text-daladaGold mr-1.5"></i><strong>Sector:</strong> ${ngo.sector}</p>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // Circulars Section & PDF Manager
+        function renderCirculars() {
+            const grid = document.getElementById('circulars-grid');
+            if(!grid) return;
+            grid.innerHTML = '';
+
+            circulars.forEach(circ => {
+                const card = document.createElement('div');
+                card.className = "bg-white p-6 rounded-2xl border border-amber-200/80 shadow-md hover:shadow-xl transition flex flex-col justify-between";
+                card.innerHTML = `
+                    <div>
+                        <span class="bg-daladaGold/20 text-daladaMaroon text-xs font-bold px-2.5 py-1 rounded-md mb-3 inline-block">${circ.act}</span>
+                        <h3 class="font-bold text-slate-800 text-base mb-2">${circ.title}</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed mb-4">${circ.desc}</p>
+                    </div>
+                    <button onclick="downloadPdf('${circ.pdfUrl}', '${circ.title}')" class="w-full py-2.5 bg-daladaMaroon text-daladaGold font-bold text-xs rounded-lg hover:bg-daladaMaroonDark transition shadow flex items-center justify-center space-x-2">
+                        <i class="fa-solid fa-file-pdf text-red-400"></i>
+                        <span>Download Gazette PDF</span>
+                    </button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function downloadPdf(url, title) {
+            if (url && url.startsWith('data:application/pdf')) {
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.pdf`;
+                a.click();
+            } else if (url) {
+                window.open(url, '_blank');
+            } else {
+                showToast("PDF document not attached!");
+            }
+        }
+
+        function handlePdfFileUpload(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    uploadedPdfBase64 = evt.target.result;
+                    showToast("PDF File attached successfully!");
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function downloadCurrentFormPdf() {
+            const pdfUrl = uploadedPdfBase64 || document.getElementById('add-circ-url').value;
+            const title = document.getElementById('add-circ-title').value || "Circular_Document";
+            if (pdfUrl) {
+                downloadPdf(pdfUrl, title);
+            } else {
+                showToast("Please upload a PDF file or enter a valid PDF link first!");
+            }
+        }
+
+        function addNewCircular(e) {
+            e.preventDefault();
+            const act = document.getElementById('add-circ-act').value;
+            const title = document.getElementById('add-circ-title').value;
+            const desc = document.getElementById('add-circ-desc').value;
+            const urlInput = document.getElementById('add-circ-url').value;
+
+            const finalPdfUrl = uploadedPdfBase64 || urlInput || 'https://www.wcd.gov.lk/images/pdf/act/act_31_1980_e.pdf';
+
+            const newCirc = {
+                id: Date.now(),
+                act: act,
+                title: title,
+                desc: desc,
+                pdfUrl: finalPdfUrl
+            };
+
+            circulars.unshift(newCirc);
+            localStorage.setItem('kandy_ngo_circulars', JSON.stringify(circulars));
+            renderCirculars();
+            renderAdminCircularsList();
+            showToast("New Gazette Circular published!");
+            e.target.reset();
+            uploadedPdfBase64 = '';
+        }
+
+        function renderAdminCircularsList() {
+            const list = document.getElementById('admin-circulars-list');
+            if(!list) return;
+            list.innerHTML = '';
+            circulars.forEach((circ, idx) => {
+                const item = document.createElement('div');
+                item.className = "p-2 bg-white border border-slate-200 rounded-lg flex items-center justify-between";
+                item.innerHTML = `
+                    <div class="truncate max-w-[70%]">
+                        <span class="font-bold text-daladaMaroon">${circ.act}</span> - <span class="text-slate-700">${circ.title}</span>
+                    </div>
+                    <div class="flex items-center space-x-1 shrink-0">
+                        <button onclick="downloadPdf('${circ.pdfUrl}', '${circ.title}')" class="text-emerald-700 hover:text-emerald-900 p-1 text-xs" title="Download PDF">
+                            <i class="fa-solid fa-download"></i>
+                        </button>
+                        <button onclick="deleteCircular(${idx})" class="text-rose-600 hover:text-rose-800 p-1 text-xs" title="Delete Circular">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function deleteCircular(index) {
+            circulars.splice(index, 1);
+            localStorage.setItem('kandy_ngo_circulars', JSON.stringify(circulars));
+            renderCirculars();
+            renderAdminCircularsList();
+            showToast("Circular deleted.");
+        }
+
+        // Team Section Manager
+        function renderTeam() {
+            const grid = document.getElementById('team-grid');
+            if (!grid) return;
+            grid.innerHTML = '';
+
+            team.forEach(m => {
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-2xl p-6 border border-amber-200/80 shadow-lg hover:shadow-xl transition text-center flex flex-col justify-between";
+                card.innerHTML = `
+                    <div>
+                        <div class="w-24 h-24 rounded-full overflow-hidden mx-auto mb-4 border-2 border-daladaGold p-1 shadow">
+                            <img src="${m.photo || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80'}" class="w-full h-full object-cover rounded-full">
+                        </div>
+                        <h3 class="text-base font-bold text-daladaMaroon royal-font">${m.name}</h3>
+                        <p class="text-xs font-bold text-daladaGoldDark mt-0.5">${m.title}</p>
+                        <p class="text-[11px] text-slate-500 mt-1">${m.role}</p>
+                    </div>
+                    <div class="mt-4 pt-3 border-t border-slate-100 flex justify-center space-x-2">
+                        ${m.email ? `<a href="mailto:${m.email}" class="w-8 h-8 rounded-full bg-amber-100 text-daladaMaroon flex items-center justify-center text-xs hover:bg-daladaMaroon hover:text-daladaGold transition" title="Email Officer"><i class="fa-solid fa-envelope"></i></a>` : ''}
+                        ${m.phone ? `<a href="tel:${m.phone}" class="w-8 h-8 rounded-full bg-amber-100 text-daladaMaroon flex items-center justify-center text-xs hover:bg-daladaMaroon hover:text-daladaGold transition" title="Call Office"><i class="fa-solid fa-phone"></i></a>` : ''}
+                        ${m.whatsapp ? `<a href="https://wa.me/${m.whatsapp.replace(/[^0-9]/g, '')}" target="_blank" class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-800 flex items-center justify-center text-xs hover:bg-emerald-700 hover:text-white transition" title="WhatsApp Officer"><i class="fa-brands fa-whatsapp text-sm"></i></a>` : ''}
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function handleTeamPhotoUpload(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    uploadedTeamPhotoBase64 = evt.target.result;
+                    showToast("Member photo attached!");
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function addNewTeamMember(e) {
+            e.preventDefault();
+            const photoInput = document.getElementById('add-team-photo').value;
+            const finalPhoto = uploadedTeamPhotoBase64 || photoInput || 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=400&q=80';
+
+            const newMember = {
+                id: Date.now(),
+                name: document.getElementById('add-team-name').value,
+                title: document.getElementById('add-team-title').value,
+                role: document.getElementById('add-team-role').value,
+                email: document.getElementById('add-team-email').value,
+                phone: document.getElementById('add-team-phone').value,
+                whatsapp: document.getElementById('add-team-whatsapp').value,
+                photo: finalPhoto
+            };
+
+            team.push(newMember);
+            localStorage.setItem('kandy_ngo_team', JSON.stringify(team));
+            renderTeam();
+            renderAdminTeamList();
+            showToast("New Team Member added!");
+            e.target.reset();
+            uploadedTeamPhotoBase64 = '';
+        }
+
+        function renderAdminTeamList() {
+            const list = document.getElementById('admin-team-list');
+            if(!list) return;
+            list.innerHTML = '';
+            team.forEach((m, idx) => {
+                const item = document.createElement('div');
+                item.className = "p-2 bg-white border border-slate-200 rounded-lg flex items-center justify-between";
+                item.innerHTML = `
+                    <div class="truncate max-w-[75%]">
+                        <span class="font-bold text-daladaMaroon">${m.name}</span> <span class="text-slate-400 text-[10px]">(${m.title})</span>
+                    </div>
+                    <button onclick="deleteTeamMember(${idx})" class="text-rose-600 hover:text-rose-800 p-1 text-xs shrink-0" title="Delete Member">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function deleteTeamMember(index) {
+            team.splice(index, 1);
+            localStorage.setItem('kandy_ngo_team', JSON.stringify(team));
+            renderTeam();
+            renderAdminTeamList();
+            showToast("Team Member deleted.");
+        }
+
+        // About Us Section Customizer
+        function renderAboutSection() {
+            if (!document.getElementById('about-header-title')) return;
+            document.getElementById('about-header-title').innerText = aboutData.headerTitle;
+            document.getElementById('about-header-sub').innerText = aboutData.headerSub;
+            document.getElementById('about-card-title').innerText = aboutData.cardTitle;
+            document.getElementById('about-card-desc').innerText = aboutData.cardDesc;
+            document.getElementById('about-card-addr').innerText = aboutData.cardAddr;
+            document.getElementById('about-card-phone').innerText = aboutData.cardPhone;
+            document.getElementById('about-card-email').innerText = aboutData.cardEmail;
+            document.getElementById('about-card-img').src = aboutData.cardImg;
+
+            document.getElementById('edit-about-header').value = aboutData.headerTitle;
+            document.getElementById('edit-about-sub').value = aboutData.headerSub;
+            document.getElementById('edit-about-title').value = aboutData.cardTitle;
+            document.getElementById('edit-about-desc').value = aboutData.cardDesc;
+            document.getElementById('edit-about-addr').value = aboutData.cardAddr;
+            document.getElementById('edit-about-phone').value = aboutData.cardPhone;
+            document.getElementById('edit-about-email').value = aboutData.cardEmail;
+            document.getElementById('edit-about-img').value = aboutData.cardImg;
+        }
+
+        function saveAboutUsContent(e) {
+            e.preventDefault();
+            aboutData = {
+                headerTitle: document.getElementById('edit-about-header').value,
+                headerSub: document.getElementById('edit-about-sub').value,
+                cardTitle: document.getElementById('edit-about-title').value,
+                cardDesc: document.getElementById('edit-about-desc').value,
+                cardAddr: document.getElementById('edit-about-addr').value,
+                cardPhone: document.getElementById('edit-about-phone').value,
+                cardEmail: document.getElementById('edit-about-email').value,
+                cardImg: document.getElementById('edit-about-img').value
+            };
+            localStorage.setItem('kandy_ngo_about', JSON.stringify(aboutData));
+            renderAboutSection();
+            showToast("About Us content updated!");
+        }
+
+        // Services Section & Admin Logic
+        function renderServices() {
+            const grid = document.getElementById('services-grid');
+            if(!grid) return;
+            grid.innerHTML = '';
+
+            services.forEach((s) => {
+                const card = document.createElement('div');
+                card.className = "bg-white p-8 rounded-2xl border border-amber-200/80 shadow-md hover:shadow-xl transition flex flex-col justify-between";
+                card.innerHTML = `
+                    <div>
+                        <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center text-daladaMaroon text-xl mb-4 border border-daladaGold/30">
+                            <i class="fa-solid ${s.icon}"></i>
+                        </div>
+                        <h3 class="font-bold text-daladaMaroon text-lg royal-font mb-2">${s.title}</h3>
+                        <p class="text-xs text-slate-600 leading-relaxed mb-6">${s.desc}</p>
+                    </div>
+                    <button onclick="navigateTo('${s.link}')" class="text-daladaMaroon font-bold text-xs hover:text-daladaMaroonDark flex items-center space-x-1">
+                        <span>${s.btnText}</span>
+                        <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                    </button>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function renderAdminServicesList() {
+            const list = document.getElementById('admin-services-list');
+            if(!list) return;
+            list.innerHTML = '';
+            services.forEach((s, idx) => {
+                const item = document.createElement('div');
+                item.className = "p-2 bg-white border border-slate-200 rounded-lg flex items-center justify-between";
+                item.innerHTML = `
+                    <div class="truncate max-w-[75%]">
+                        <i class="fa-solid ${s.icon} text-daladaGold mr-1"></i> <span class="font-bold text-daladaMaroon">${s.title}</span>
+                    </div>
+                    <button onclick="deleteService(${idx})" class="text-rose-600 hover:text-rose-800 p-1 text-xs shrink-0" title="Delete Service">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function addNewService(e) {
+            e.preventDefault();
+            const newServ = {
+                id: Date.now(),
+                icon: document.getElementById('add-serv-icon').value,
+                title: document.getElementById('add-serv-title').value,
+                desc: document.getElementById('add-serv-desc').value,
+                btnText: document.getElementById('add-serv-btn').value,
+                link: document.getElementById('add-serv-link').value
+            };
+            services.push(newServ);
+            localStorage.setItem('kandy_ngo_services', JSON.stringify(services));
+            renderServices();
+            renderAdminServicesList();
+            showToast("New Public Service added!");
+            e.target.reset();
+        }
+
+        function deleteService(index) {
+            services.splice(index, 1);
+            localStorage.setItem('kandy_ngo_services', JSON.stringify(services));
+            renderServices();
+            renderAdminServicesList();
+            showToast("Service entry deleted.");
+        }
+
+        // Projects Section & Admin Logic
+        function renderProjects() {
+            const grid = document.getElementById('projects-grid');
+            if(!grid) return;
+            grid.innerHTML = '';
+
+            projects.forEach((p) => {
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-2xl border border-amber-200 overflow-hidden shadow-md hover:shadow-lg transition flex flex-col justify-between";
+                card.innerHTML = `
+                    <div>
+                        <div class="h-44 w-full bg-slate-200 overflow-hidden relative">
+                            <img src="${p.image || 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=600&q=80'}" class="w-full h-full object-cover">
+                            <span class="absolute top-3 right-3 bg-emerald-700 text-white text-[10px] font-bold px-2 py-0.5 rounded shadow">
+                                Approved Project
+                            </span>
+                        </div>
+                        <div class="p-5">
+                            <span class="text-[10px] bg-amber-100 text-daladaMaroon font-bold px-2.5 py-1 rounded-full">${p.ds}</span>
+                            <h3 class="font-bold text-daladaMaroon mt-2 text-base">${p.title}</h3>
+                            <p class="text-xs text-slate-600 mt-1 leading-relaxed">${p.desc}</p>
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        function renderAdminProjectsList() {
+            const list = document.getElementById('admin-projects-list');
+            if(!list) return;
+            list.innerHTML = '';
+            projects.forEach((p, idx) => {
+                const item = document.createElement('div');
+                item.className = "p-2 bg-white border border-slate-200 rounded-lg flex items-center justify-between";
+                item.innerHTML = `
+                    <div class="truncate max-w-[75%]">
+                        <span class="font-bold text-daladaMaroon">${p.title}</span> <span class="text-slate-400 text-[10px]">(${p.ds})</span>
+                    </div>
+                    <button onclick="deleteProject(${idx})" class="text-rose-600 hover:text-rose-800 p-1 text-xs shrink-0" title="Delete Project">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function handleProjectPhotoUpload(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    uploadedProjectPhotoBase64 = evt.target.result;
+                    showToast("Project photo attached!");
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function addNewProject(e) {
+            e.preventDefault();
+            const urlInput = document.getElementById('add-proj-img').value;
+            const finalImage = uploadedProjectPhotoBase64 || urlInput || 'https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?auto=format&fit=crop&w=600&q=80';
+
+            const newProj = {
+                id: Date.now(),
+                title: document.getElementById('add-proj-title').value,
+                ds: document.getElementById('add-proj-ds').value,
+                desc: document.getElementById('add-proj-desc').value,
+                image: finalImage
+            };
+
+            projects.unshift(newProj);
+            localStorage.setItem('kandy_ngo_projects', JSON.stringify(projects));
+            renderProjects();
+            renderAdminProjectsList();
+            showToast("New Approved Project added!");
+            e.target.reset();
+            uploadedProjectPhotoBase64 = '';
+        }
+
+        function deleteProject(index) {
+            projects.splice(index, 1);
+            localStorage.setItem('kandy_ngo_projects', JSON.stringify(projects));
+            renderProjects();
+            renderAdminProjectsList();
+            showToast("Project deleted.");
+        }
+
+        // Gallery & Video Event Logic
+        function renderGallery() {
+            const grid = document.getElementById('gallery-grid');
+            if(!grid) return;
+            grid.innerHTML = '';
+
+            gallery.forEach((g) => {
+                const card = document.createElement('div');
+                card.className = "rounded-xl overflow-hidden shadow border border-amber-200 bg-white flex flex-col justify-between";
+
+                if (g.type === 'video') {
+                    const ytEmbedUrl = extractYouTubeEmbed(g.src);
+                    card.innerHTML = `
+                        <div class="h-44 w-full bg-black relative">
+                            <iframe class="w-full h-full" src="${ytEmbedUrl}" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                        ${g.title ? `<div class="p-2.5 text-xs font-bold text-slate-800 border-t border-slate-100 flex items-center space-x-1.5"><i class="fa-brands fa-youtube text-red-600 text-sm"></i><span class="truncate">${g.title}</span></div>` : ''}
+                    `;
+                } else {
+                    card.innerHTML = `
+                        <div class="h-44 w-full overflow-hidden">
+                            <img src="${g.src}" class="w-full h-full object-cover hover:scale-110 transition duration-300">
+                        </div>
+                        ${g.title ? `<div class="p-2.5 text-xs font-bold text-slate-800 border-t border-slate-100 truncate"><i class="fa-solid fa-image text-daladaGold text-xs mr-1"></i>${g.title}</div>` : ''}
+                    `;
+                }
+
+                grid.appendChild(card);
+            });
+        }
+
+        function extractYouTubeEmbed(url) {
+            if (!url) return '';
+            let videoId = '';
+            if (url.includes('embed/')) {
+                return url;
+            } else if (url.includes('watch?v=')) {
+                videoId = url.split('watch?v=')[1].split('&')[0];
+            } else if (url.includes('youtu.be/')) {
+                videoId = url.split('youtu.be/')[1].split('?')[0];
+            } else {
+                return url;
+            }
+            return `https://www.youtube.com/embed/${videoId}`;
+        }
+
+        function toggleGalleryTypeInputs() {
+            const type = document.getElementById('add-gal-type').value;
+            const photoInp = document.getElementById('gal-photo-inputs');
+            const videoInp = document.getElementById('gal-video-inputs');
+            if (type === 'video') {
+                photoInp.classList.add('hidden');
+                videoInp.classList.remove('hidden');
+            } else {
+                photoInp.classList.remove('hidden');
+                videoInp.classList.add('hidden');
+            }
+        }
+
+        function handleGalleryPhotoUpload(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    uploadedGalleryPhotoBase64 = evt.target.result;
+                    showToast("Gallery photo attached!");
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function addNewGalleryItem(e) {
+            e.preventDefault();
+            const type = document.getElementById('add-gal-type').value;
+            const title = document.getElementById('add-gal-title').value;
+            let src = '';
+
+            if (type === 'video') {
+                src = document.getElementById('add-gal-yt').value;
+                if (!src) {
+                    showToast("Please enter a YouTube video URL!");
+                    return;
+                }
+            } else {
+                const urlInput = document.getElementById('add-gal-img').value;
+                src = uploadedGalleryPhotoBase64 || urlInput || 'https://images.unsplash.com/photo-1531206715517-5c0ba140b2b8?auto=format&fit=crop&w=600&q=80';
+            }
+
+            const newItem = {
+                id: Date.now(),
+                type: type,
+                title: title,
+                src: src
+            };
+
+            gallery.unshift(newItem);
+            localStorage.setItem('kandy_ngo_gallery', JSON.stringify(gallery));
+            renderGallery();
+            renderAdminGalleryList();
+            showToast("New media item added to Gallery!");
+            e.target.reset();
+            toggleGalleryTypeInputs();
+            uploadedGalleryPhotoBase64 = '';
+        }
+
+        function renderAdminGalleryList() {
+            const list = document.getElementById('admin-gallery-list');
+            if(!list) return;
+            list.innerHTML = '';
+            gallery.forEach((g, idx) => {
+                const item = document.createElement('div');
+                item.className = "p-2 bg-white border border-slate-200 rounded-lg flex items-center justify-between";
+                item.innerHTML = `
+                    <div class="truncate max-w-[75%] flex items-center space-x-2">
+                        <i class="${g.type === 'video' ? 'fa-brands fa-youtube text-red-600' : 'fa-solid fa-image text-daladaGold'}"></i>
+                        <span class="font-bold text-slate-800 text-xs truncate">${g.title || (g.type === 'video' ? 'YouTube Video' : 'Photo')}</span>
+                    </div>
+                    <button onclick="deleteGalleryItem(${idx})" class="text-rose-600 hover:text-rose-800 p-1 text-xs shrink-0" title="Delete Media Item">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function deleteGalleryItem(index) {
+            gallery.splice(index, 1);
+            localStorage.setItem('kandy_ngo_gallery', JSON.stringify(gallery));
+            renderGallery();
+            renderAdminGalleryList();
+            showToast("Gallery item deleted.");
+        }
+
+        // Admin Panel Navigation & Controls
+        function openAdminModal(tab = 'sub-slider') {
+            document.getElementById('admin-modal').classList.remove('hidden');
+            if (isAdminLoggedIn) {
+                document.getElementById('admin-login-view').classList.add('hidden');
+                document.getElementById('admin-dashboard-view').classList.remove('hidden');
+                document.getElementById('admin-modal-footer').classList.remove('hidden');
+                switchAdminTab(tab);
+                renderSubmissionsList();
+            } else {
+                document.getElementById('admin-login-view').classList.remove('hidden');
+                document.getElementById('admin-dashboard-view').classList.add('hidden');
+                document.getElementById('admin-modal-footer').classList.add('hidden');
+            }
+        }
+
+        function closeAdminModal() {
+            document.getElementById('admin-modal').classList.add('hidden');
+        }
+
+        function handleAdminLogin(e) {
+            e.preventDefault();
+            const u = document.getElementById('admin-user').value;
+            const p = document.getElementById('admin-pass').value;
+
+            if (u === 'admin' && p === 'admin123') {
+                isAdminLoggedIn = true;
+                localStorage.setItem('kandy_admin_active', 'true');
+                updateAdminUIState();
+                openAdminModal('sub-slider');
+                showToast("Admin session active!");
+            } else {
+                showToast("Invalid Credentials! (Try admin / admin123)");
+            }
+        }
+
+        function handleAdminLogout() {
+            isAdminLoggedIn = false;
+            localStorage.removeItem('kandy_admin_active');
+            updateAdminUIState();
+            closeAdminModal();
+            showToast("Logged out of Admin Portal.");
+        }
+
+        function updateAdminUIState() {
+            const badge = document.getElementById('admin-badge');
+            const logoutBtn = document.getElementById('header-logout-btn');
+            const adminOnlyElements = document.querySelectorAll('.admin-only');
+
+            if (isAdminLoggedIn) {
+                if (badge) badge.classList.remove('hidden');
+                if (logoutBtn) logoutBtn.classList.remove('hidden');
+                adminOnlyElements.forEach(el => el.classList.remove('hidden'));
+            } else {
+                if (badge) badge.classList.add('hidden');
+                if (logoutBtn) logoutBtn.classList.add('hidden');
+                adminOnlyElements.forEach(el => el.classList.add('hidden'));
+            }
+        }
+
+        function switchAdminTab(subviewId) {
+            const subviews = document.querySelectorAll('.admin-subview');
+            subviews.forEach(v => v.classList.add('hidden'));
+
+            const targetSubview = document.getElementById(subviewId);
+            if (targetSubview) {
+                targetSubview.classList.remove('hidden');
+            }
+
+            const tabBtns = document.querySelectorAll('#admin-dashboard-view button[id^="atab-"]');
+            tabBtns.forEach(btn => {
+                btn.className = "flex-1 py-3 px-3 text-center text-slate-600 hover:text-daladaMaroon flex items-center justify-center space-x-1 whitespace-nowrap";
+            });
+
+            const activeBtn = document.getElementById(`atab-${subviewId}`);
+            if (activeBtn) {
+                activeBtn.className = "flex-1 py-3 px-3 text-center text-daladaMaroon border-b-2 border-daladaGold font-bold flex items-center justify-center space-x-1 whitespace-nowrap";
+            }
+        }
+
+        function renderAdminSlideList() {
+            const list = document.getElementById('admin-slide-list');
+            if(!list) return;
+            list.innerHTML = '';
+            slides.forEach((slide, idx) => {
+                const item = document.createElement('div');
+                item.className = "p-2 bg-white border border-slate-200 rounded-lg flex items-center justify-between";
+                item.innerHTML = `
+                    <div class="truncate max-w-[80%]">
+                        <span class="font-bold text-daladaMaroon">${slide.title}</span>
+                    </div>
+                    <button onclick="deleteSlide(${idx})" class="text-rose-600 hover:text-rose-800 p-1 text-xs" title="Delete Slide">
+                        <i class="fa-solid fa-trash"></i>
+                    </button>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function addNewSlide(e) {
+            e.preventDefault();
+            const newSlide = {
+                id: Date.now(),
+                title: document.getElementById('add-slide-title').value,
+                sub: document.getElementById('add-slide-sub').value,
+                url: document.getElementById('add-slide-url').value
+            };
+            slides.push(newSlide);
+            localStorage.setItem('kandy_ngo_slides', JSON.stringify(slides));
+            renderSlides();
+            renderAdminSlideList();
+            showToast("New Slide added successfully!");
+            e.target.reset();
+        }
+
+        function deleteSlide(index) {
+            slides.splice(index, 1);
+            localStorage.setItem('kandy_ngo_slides', JSON.stringify(slides));
+            renderSlides();
+            renderAdminSlideList();
+            showToast("Slide removed.");
+        }
+
+        // Submissions & Approvals Manager
+        function renderSubmissionsList() {
+            const list = document.getElementById('admin-submissions-list');
+            if (!list) return;
+            list.innerHTML = '';
+
+            if (submissions.length === 0) {
+                list.innerHTML = `<p class="text-xs text-slate-400 italic p-4 text-center">No pending NGO registration applications.</p>`;
+                return;
+            }
+
+            submissions.forEach((sub, idx) => {
+                const item = document.createElement('div');
+                item.className = "p-4 bg-white border border-amber-200 rounded-xl space-y-2 text-xs shadow-sm";
+                item.innerHTML = `
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <span class="font-bold text-daladaMaroon text-sm">${sub.name}</span>
+                            <span class="text-[10px] bg-amber-100 text-daladaMaroon px-2 py-0.5 rounded font-bold ml-2">${sub.type}</span>
+                        </div>
+                        <span class="text-[10px] text-slate-400 font-mono">${sub.dateSubmitted}</span>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 text-slate-600">
+                        <p><strong>DS Division:</strong> ${sub.ds}</p>
+                        <p><strong>Sector:</strong> ${sub.sector}</p>
+                        <p><strong>Head:</strong> ${sub.head}</p>
+                        <p><strong>Email:</strong> ${sub.email}</p>
+                    </div>
+                    <div class="flex justify-end space-x-2 border-t border-slate-100 pt-2 mt-2">
+                        <button onclick="approveSubmission(${idx})" class="px-3 py-1 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded text-xs flex items-center space-x-1">
+                            <i class="fa-solid fa-check"></i>
+                            <span>Approve & Add to Directory</span>
+                        </button>
+                        <button onclick="deleteSubmission(${idx})" class="px-3 py-1 bg-rose-700 hover:bg-rose-800 text-white font-bold rounded text-xs">
+                            Reject
+                        </button>
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function approveSubmission(index) {
+            const sub = submissions[index];
+            const newNgo = {
+                id: Date.now(),
+                name: sub.name,
+                reg: sub.regNum !== 'Pending' ? sub.regNum : `VSSO-KND-${Math.floor(10 + Math.random() * 90)}`,
+                type: sub.type,
+                ds: sub.ds,
+                sector: sub.sector,
+                head: sub.head
+            };
+
+            ngos.unshift(newNgo);
+            localStorage.setItem('kandy_ngo_directory', JSON.stringify(ngos));
+            
+            submissions.splice(index, 1);
+            localStorage.setItem('kandy_ngo_submissions', JSON.stringify(submissions));
+
+            renderDirectory();
+            renderSubmissionsList();
+            showToast("NGO Approved and added to Official Directory!");
+        }
+
+        function deleteSubmission(index) {
+            submissions.splice(index, 1);
+            localStorage.setItem('kandy_ngo_submissions', JSON.stringify(submissions));
+            renderSubmissionsList();
+            showToast("Application removed.");
+        }
+
+        // Export Functions: CSV, PDF, Google Sheets
+        function exportToExcel() {
+            if (submissions.length === 0 && ngos.length === 0) {
+                showToast("No registration data available to export!");
+                return;
+            }
+
+            let csvContent = "data:text/csv;charset=utf-8,ID,Organization Name,Registration No,Type,DS Division,Sector,Head Officer\n";
+            const dataToExport = [...submissions, ...ngos];
+
+            dataToExport.forEach(item => {
+                const row = `"${item.id}","${item.name}","${item.reg || item.regNum}","${item.type}","${item.ds}","${item.sector}","${item.head}"`;
+                csvContent += row + "\n";
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Kandy_NGO_Registrations_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            showToast("Exported to Excel (.CSV)!");
+        }
+
+        function exportToPDF() {
+            window.print();
+        }
+
+        function exportToGoogleSheets() {
+            let tsvContent = "Organization Name\tRegistration No\tType\tDS Division\tSector\tHead Officer\n";
+            const dataToExport = [...submissions, ...ngos];
+
+            dataToExport.forEach(item => {
+                tsvContent += `${item.name}\t${item.reg || item.regNum}\t${item.type}\t${item.ds}\t${item.sector}\t${item.head}\n`;
+            });
+
+            const tempInput = document.createElement("textarea");
+            tempInput.value = tsvContent;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempInput);
+
+            showToast("Data copied! Opening Google Sheets...");
+            window.open("https://sheets.new", "_blank");
+        }
+
+        // Toast Notification System
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toast-msg');
+            if (!toast) return;
+
+            toastMsg.innerText = msg;
+            toast.classList.remove('translate-y-20', 'opacity-0');
+
+            setTimeout(() => {
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 3500);
+        }
+    </script>
+</body>
+</html>
+```
+
+### 🌟 Summary of Included Features:
+1. **Projects Approval & Dynamic Project Cards:** Public **"Apply for Project Approval"** button that routes users directly to the Registration Portal, along with full **Add/Delete** project capabilities in the Admin Panel (**Projects Manager** tab) with direct **File Upload / URL** support for project cover images.
+2. **Media Gallery & YouTube Video Embeds:** Dynamic Media Gallery supporting **Photos (Direct Upload / URL)** as well as **YouTube Videos** with inline video player previews and a dedicated Admin tab (**Gallery & Videos**).
+3. **Registration Exports:** Full support for exporting NGO registrations to **Excel (.CSV)**, **PDF Reports**, and **Google Sheets Sync**.
+4. **Admin Panel Features:** Admin customizers for Slides, Gazette Circulars, Team Members (Email, Phone, WhatsApp, Photo Uploads), About Us content, Public Services, Projects, and Media Gallery.
